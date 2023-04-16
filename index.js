@@ -1,13 +1,16 @@
 const express = require('express');
 const app = express();
-const usuariosRouter = require('./routes/usuarios');
-const swagger = require('./swagger');
+const pool = require('./database');
 
-app.use(express.json());
 
-app.use('/usuarios', usuariosRouter);
-
-swagger(app);
+app.get('/usuarios', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM usuario');
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.listen(8000, () => {
   console.log('Servidor iniciado na porta 8000');
