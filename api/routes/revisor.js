@@ -13,7 +13,7 @@ module.exports = (pool) => {
   router.get('/:email', async (req, res) => {
     const email = req.params.email;
     try {
-      const { rows } = await pool.query('SELECT u.email, u.nome_completo, u.telefone, u.departamento, u.descricao, p.nome_papel FROM usuario u INNER JOIN papel p ON u.email = p.email INNER JOIN revisor e ON p.id_papel = e.id_papel WHERE u.email = $1', [email]);
+      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email where papel.nome_papel = 'Revisor' and usuario.email = $1", [email]);
       res.json(rows);
     } catch (error) {
       res.status(500).json({ error: 'revisor nao encontrado' });
