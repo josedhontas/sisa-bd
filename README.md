@@ -12,7 +12,7 @@ A documentação da API pode ser encontrada em: [colocar link](https:google.com.
 
 ### Acessar API
 
-A documentação da API pode ser encontrada em: [sisa-api](https://sisa-api-nalwq.ondigitalocean.app/usuarios/)
+A API pode ser encontrada em: [sisa-api](https://sisa-api-nalwq.ondigitalocean.app/usuarios/)
 
 ### Vídeo demonstrativo
 
