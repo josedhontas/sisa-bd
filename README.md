@@ -10,6 +10,10 @@ Este é um projeto para a disciplina de Banco de Dados, desenvolvido por:
 
 A documentação da API pode ser encontrada em: [colocar link](https:google.com.br/)
 
+### Acessar API
+
+A documentação da API pode ser encontrada em: [sisa-api](https://sisa-api-nalwq.ondigitalocean.app/usuarios/)
+
 ### Vídeo demonstrativo
 
 O video encontra-se em: [colocar link](https://youtu.be/7T-413zNM7Q)
