@@ -32,17 +32,21 @@ module.exports = (pool) => {
     }
   });
 
-  /*router.put('/:id', async (req, res) => {
+  router.put('/:id', async (req, res) => {
+    const { email, nome_papel } = req.body;
     const { id_papel } = req.params;
-    const { id_papel} = req.body;
   
     try {
-      const { rows } = await pool.query('UPDATE papel SET id_papel=$1 WHERE id_papel=$2 RETURNING *', [id_papel, id_papel]);
-      res.json(rows[0]);
+      const result = await pool.query(
+        'UPDATE papel SET email = $1, nome_papel = $2 WHERE id_papel = $3',
+        [email, nome_papel, id_papel]
+      );
+      res.status(200).send(`Registro com ID ${id_papel} atualizado com sucesso!`);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).send('Erro ao atualizar registro na tabela "papel"');
     }
-  });*/
+  });
 
   router.delete('/:id', async (req, res) => {
     const { id_papel } = req.params;

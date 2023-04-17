@@ -8,8 +8,8 @@ const papelRoutes = require('./routes/papel')(pool);
 
 
 app.use('/usuarios', usuariosRoutes);
-app.use('/editor', editorRoutes);
 app.use('/papel', papelRoutes);
+app.use('/editor', editorRoutes);
 
 
 
