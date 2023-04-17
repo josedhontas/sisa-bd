@@ -4,7 +4,7 @@ const router = express.Router();
 module.exports = (pool) => {
   router.get('/', async (req, res) => {
     try {
-      const { rows } = await pool.query('SELECT u.email, u.nome_completo, u.telefone, u.departamento, u.descricao, p.nome_papel FROM editor e INNER JOIN papel p ON e.id_papel = p.id_papel INNER JOIN usuario u ON p.email = u.email');
+      const { rows } = await pool.query("SELECT usuario.*, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email WHERE papel.nome_papel = 'Editor'"); res.json(rows);
       res.json(rows);
     } catch (error) {
       res.status(500).json({ error: error.message });
