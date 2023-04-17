@@ -1,0 +1,64 @@
+-- Inserindo dados na tabela usuario
+INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, descricao) VALUES
+('usuario1@example.com', 'Usuário 1', 'senha123', '555-1234', 'Departamento 1', 'Descrição do usuário 1'),
+('usuario2@example.com', 'Usuário 2', 'senha456', '555-5678', 'Departamento 2', 'Descrição do usuário 2');
+
+-- Inserindo dados na tabela papel
+INSERT INTO papel (email, nome_papel) VALUES
+('usuario1@example.com', 'Papel 1'),
+('usuario2@example.com', 'Papel 2');
+
+-- Inserindo dados na tabela editor
+INSERT INTO editor (id_papel) VALUES
+(1),
+(2);
+
+-- Inserindo dados na tabela autor
+INSERT INTO autor (id_papel) VALUES
+(1),
+(2);
+
+-- Inserindo dados na tabela gestor
+INSERT INTO gestor (id_papel) VALUES
+(1),
+(2);
+
+-- Inserindo dados na tabela administrador
+INSERT INTO administrador (id_gestor, id_papel) VALUES
+(1, 1),
+(2, 2);
+
+-- Inserindo dados na tabela revista
+INSERT INTO revista (nome_revista, descricao) VALUES
+('Revista 1', 'Descrição da Revista 1'),
+('Revista 2', 'Descrição da Revista 2');
+
+-- Inserindo dados na tabela trabalha
+INSERT INTO trabalha (id_editor, id_revista, id_administrador) VALUES
+(1, 1, 1),
+(2, 2, 2);
+
+-- Inserindo dados na tabela artigo
+INSERT INTO artigo (id_revista, nome_artigo, resumo) VALUES
+(1, 'Artigo 1', 'Resumo do Artigo 1'),
+(2, 'Artigo 2', 'Resumo do Artigo 2');
+
+-- Inserindo dados na tabela revisor
+INSERT INTO revisor (id_papel) VALUES
+(1),
+(2);
+
+-- Inserindo dados na tabela avaliacao
+INSERT INTO avaliacao (id_revisor, id_artigo, avaliacao, comentario) VALUES
+(1, 1, 'Aprovado', 'Comentário da Avaliação 1'),
+(2, 2, 'Reprovado', 'Comentário da Avaliação 2');
+
+-- Inserindo dados na tabela parecer
+INSERT INTO parecer (id_editor, id_artigo, data, comentario, parecer) VALUES
+(1, 1, '2023-04-17', 'Comentário do Parecer 1', 'Aprovado'),
+(2, 2, '2023-04-18', 'Comentário do Parecer 2', 'Reprovado');
+
+-- Inserindo dados na tabela submete
+INSERT INTO submete (id_autor, id_artigo) VALUES
+(1, 1),
+(2, 2);

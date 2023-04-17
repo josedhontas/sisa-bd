@@ -1,0 +1,83 @@
+CREATE TABLE usuario (
+  email VARCHAR PRIMARY KEY,
+  nome_completo VARCHAR NOT NULL,
+  senha VARCHAR NOT NULL,
+  telefone VARCHAR,
+  departamento VARCHAR,
+  descricao TEXT
+);
+
+CREATE TABLE papel (
+  id_papel SERIAL PRIMARY KEY,
+  email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
+  nome_papel VARCHAR NOT NULL
+);
+
+CREATE TABLE editor (
+  id_editor SERIAL PRIMARY KEY,
+  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+);
+
+CREATE TABLE autor (
+  id_autor SERIAL PRIMARY KEY,
+  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+);
+
+CREATE TABLE gestor (
+  id_gestor SERIAL PRIMARY KEY,
+  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+);
+
+CREATE TABLE administrador (
+  id_administrador SERIAL PRIMARY KEY,
+  id_gestor INT REFERENCES gestor(id_gestor) ON DELETE CASCADE,
+  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+);
+
+CREATE TABLE revista (
+  id_revista SERIAL PRIMARY KEY,
+  nome_revista VARCHAR,
+  descricao TEXT
+);
+
+CREATE TABLE trabalha (
+  id_editor INT REFERENCES editor(id_editor),
+  id_revista INT REFERENCES revista(id_revista),
+  id_administrador INT REFERENCES administrador(id_administrador),
+  PRIMARY KEY (id_editor, id_revista)
+);
+
+CREATE TABLE artigo (
+  id_artigo SERIAL PRIMARY KEY,
+  id_revista INT REFERENCES revista(id_revista),
+  nome_artigo VARCHAR,
+  resumo TEXT
+);
+
+CREATE TABLE revisor (
+  id_revisor SERIAL PRIMARY KEY,
+  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+);
+
+CREATE TABLE avaliacao (
+  id_avaliacao SERIAL PRIMARY KEY,
+  id_revisor INT REFERENCES revisor(id_revisor) ON DELETE CASCADE,
+  id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
+  avaliacao VARCHAR,
+  comentario TEXT
+);
+
+CREATE TABLE parecer (
+  id_editor INT REFERENCES editor(id_editor) ON DELETE CASCADE,
+  id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
+  data DATE,
+  comentario TEXT,
+  parecer VARCHAR,
+  PRIMARY KEY (id_editor, id_artigo)
+);
+
+CREATE TABLE submete (
+  id_autor INT REFERENCES autor(id_autor) ON DELETE CASCADE,
+  id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
+  PRIMARY KEY (id_autor, id_artigo)
+);

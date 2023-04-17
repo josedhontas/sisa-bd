@@ -22,10 +22,10 @@ module.exports = (pool) => {
   });
 
   router.post('/', async (req, res) => {
-    const { email, nome_completo, senha, telefone, departamento, tipo_de_usuario, descricao } = req.body;
+    const { email, nome_completo, senha, telefone, departamento, descricao } = req.body;
   
     try {
-      const { rows } = await pool.query('INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, tipo_de_usuario, descricao) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [email, nome_completo, senha, telefone, departamento, tipo_de_usuario, descricao]);
+      const { rows } = await pool.query('INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, descricao) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [email, nome_completo, senha, telefone, departamento, descricao]);
       res.json(rows[0]);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -34,10 +34,10 @@ module.exports = (pool) => {
 
   router.put('/:email', async (req, res) => {
     const { email } = req.params;
-    const { nome_completo, senha, telefone, departamento, tipo_de_usuario, descricao } = req.body;
+    const { nome_completo, senha, telefone, departamento, descricao } = req.body;
   
     try {
-      const { rows } = await pool.query('UPDATE usuario SET nome_completo=$1, senha=$2, telefone=$3, departamento=$4, tipo_de_usuario=$5, descricao=$6 WHERE email=$7 RETURNING *', [nome_completo, senha, telefone, departamento, tipo_de_usuario, descricao, email]);
+      const { rows } = await pool.query('UPDATE usuario SET nome_completo=$1, senha=$2, telefone=$3, departamento=$4, descricao=$5 WHERE email=$6 RETURNING *', [nome_completo, senha, telefone, departamento, descricao, email]);
       res.json(rows[0]);
     } catch (error) {
       res.status(500).json({ error: error.message });
