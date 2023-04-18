@@ -8,7 +8,7 @@ CREATE TABLE usuario (
 );
 
 CREATE TABLE papel (
-  id_papel SERIAL PRIMARY KEY,
+  id_papel INT PRIMARY KEY,
   email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
   nome_papel VARCHAR NOT NULL
 );
@@ -30,7 +30,7 @@ CREATE TABLE administrador (
 );
 
 CREATE TABLE revista (
-  id_revista SERIAL PRIMARY KEY,
+  id_revista INT PRIMARY KEY,
   nome_revista VARCHAR,
   descricao TEXT
 );
@@ -48,19 +48,20 @@ CREATE TABLE trabalha_administrador (
 );
 
 CREATE TABLE artigo (
-  id_artigo SERIAL PRIMARY KEY,
-  id_revista INT REFERENCES revista(id_revista),
+  id_artigo INT PRIMARY KEY,
+  id_revista INT REFERENCES revista(id_revista) ON DELETE SET NULL, -- Alteração aqui
   nome_artigo VARCHAR,
   resumo TEXT
 );
 
+
 CREATE TABLE revisor (
-  id_revisor SERIAL PRIMARY KEY,
+  id_revisor INT PRIMARY KEY,
   id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
 );
 
 CREATE TABLE avaliacao (
-  id_avaliacao SERIAL PRIMARY KEY,
+  id_avaliacao INT PRIMARY KEY,
   id_revisor INT REFERENCES revisor(id_revisor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
   avaliacao VARCHAR,
