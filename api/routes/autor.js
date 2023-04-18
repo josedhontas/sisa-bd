@@ -14,8 +14,7 @@ module.exports = (pool) => {
   router.get('/:email', async (req, res) => {
     const email = req.params.email;
     try {
-      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email where papel.nome_papel = 'Autor' and usuario.email = $1", [email]);
-      res.json(rows);
+      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email where papel.nome_papel = 'Autor' and usuario.email = $1", [email]);      res.json(rows);
     } catch (error) {
       res.status(500).json({ error: 'autor nao encontrado' });
     }

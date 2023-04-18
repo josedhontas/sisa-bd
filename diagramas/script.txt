@@ -14,24 +14,19 @@ CREATE TABLE papel (
 );
 
 CREATE TABLE editor (
-  id_editor SERIAL PRIMARY KEY,
-  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_editor INT REFERENCES papel(id_papel) ON DELETE CASCADE
 );
 
 CREATE TABLE autor (
-  id_autor SERIAL PRIMARY KEY,
-  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_autor INT REFERENCES papel(id_papel) ON DELETE CASCADE
 );
 
 CREATE TABLE gestor (
-  id_gestor SERIAL PRIMARY KEY,
-  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_gestor INT REFERENCES papel(id_papel) ON DELETE CASCADE
 );
 
 CREATE TABLE administrador (
-  id_administrador SERIAL PRIMARY KEY,
-  id_gestor INT REFERENCES gestor(id_gestor) ON DELETE CASCADE,
-  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_administrador INT REFERENCES papel(id_papel) ON DELETE CASCADE
 );
 
 CREATE TABLE revista (
@@ -40,11 +35,17 @@ CREATE TABLE revista (
   descricao TEXT
 );
 
-CREATE TABLE trabalha (
+CREATE TABLE trabalha_editor (
   id_editor INT REFERENCES editor(id_editor),
   id_revista INT REFERENCES revista(id_revista),
-  id_administrador INT REFERENCES administrador(id_administrador),
-  PRIMARY KEY (id_editor, id_revista)
+  PRIMARY KEY (id_editor)
+);
+
+
+CREATE TABLE trabalha_administrador (
+  id_administrador INT REFERENCES editor(id_editor),
+  id_revista INT REFERENCES revista(id_revista),
+  PRIMARY KEY (id_administrador)
 );
 
 CREATE TABLE artigo (
