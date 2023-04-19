@@ -6,33 +6,40 @@ CREATE TABLE usuario (
   departamento VARCHAR,
   descricao TEXT,
   link_imagem VARCHAR
-
-);
-
-CREATE TABLE papel (
-  id_papel INT PRIMARY KEY,
-  email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
-  nome_papel VARCHAR NOT NULL
 );
 
 CREATE TABLE editor (
-  id_editor INT PRIMARY KEY REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_editor SERIAL PRIMARY KEY,
+  email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
+  cargo VARCHAR
 );
 
 CREATE TABLE autor (
-  id_autor INT PRIMARY KEY REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_autor SERIAL PRIMARY KEY,
+  email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
+  cargo VARCHAR
+);
+
+CREATE TABLE revisor (
+  id_revisor SERIAL PRIMARY KEY,
+  email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
+  cargo VARCHAR
 );
 
 CREATE TABLE gestor (
-  id_gestor INT PRIMARY KEY REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_gestor SERIAL PRIMARY KEY,
+  email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
+  cargo VARCHAR
 );
 
 CREATE TABLE administrador (
-  id_administrador INT PRIMARY KEY REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_administrador SERIAL PRIMARY KEY,
+  email VARCHAR REFERENCES usuario(email) ON DELETE CASCADE,
+  cargo VARCHAR
 );
 
 CREATE TABLE revista (
-  id_revista INT PRIMARY KEY,
+  id_revista SERIAL PRIMARY KEY,
   nome_revista VARCHAR,
   descricao TEXT
 );
@@ -50,21 +57,15 @@ CREATE TABLE trabalha_administrador (
 );
 
 CREATE TABLE artigo (
-  id_artigo INT PRIMARY KEY,
-  id_revista INT REFERENCES revista(id_revista) ON DELETE SET NULL, -- Alteração aqui
+  id_artigo SERIAL PRIMARY KEY,
+  id_revista INT REFERENCES revista(id_revista) ON DELETE SET NULL,
   nome_artigo VARCHAR,
   link_artigo VARCHAR,
   resumo TEXT
 );
 
-
-CREATE TABLE revisor (
-  id_revisor INT PRIMARY KEY REFERENCES papel(id_papel) ON DELETE CASCADE
-
-);
-
 CREATE TABLE avaliacao (
-  id_avaliacao INT PRIMARY KEY,
+  id_avaliacao SERIAL PRIMARY KEY,
   id_revisor INT REFERENCES revisor(id_revisor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
   avaliacao VARCHAR,
@@ -72,7 +73,7 @@ CREATE TABLE avaliacao (
 );
 
 CREATE TABLE parecer (
-  id_parecer INT PRIMARY KEY,
+  id_parecer SERIAL PRIMARY KEY,
   id_editor INT REFERENCES editor(id_editor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
   data DATE,
@@ -80,8 +81,8 @@ CREATE TABLE parecer (
   parecer VARCHAR
 );
 
-
 CREATE TABLE submete (
   id_autor INT REFERENCES autor(id_autor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
+  PRIMARY KEY (id_autor, id_artigo)
 );
