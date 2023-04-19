@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
+
+  // Rota para buscar todos os administradores
+  router.get('/', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM administrador');
+      res.json(result.rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erro ao buscar administradores');
+    }
+  });
+
   // Rota para buscar um administrador por email
   router.get('/:email', async (req, res) => {
     try {
@@ -30,7 +42,7 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao criar novo administrador' });
     }
   });
-  
+
 
   // Rota para atualizar um administrador existente
   router.put('/:email', async (req, res) => {
