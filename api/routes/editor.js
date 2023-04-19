@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
+
+
+  // Rota para buscar todos os editores
+  router.get('/', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM editor');
+      res.json(result.rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erro ao buscar editores');
+    }
+  });
   // Rota para buscar um editor por email
   router.get('/:email', async (req, res) => {
     try {
@@ -17,7 +29,7 @@ module.exports = (pool) => {
   // Rota para criar um novo editor
   router.post('/', async (req, res) => {
     try {
-      const { email} = req.body;
+      const { email } = req.body;
       const result = await pool.query("INSERT INTO editor (email, cargo) VALUES ($1, 'Editor') RETURNING *", [email]);
       res.status(201).json(result.rows[0]);
     } catch (error) {
