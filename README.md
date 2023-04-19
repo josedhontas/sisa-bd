@@ -4,7 +4,7 @@ Este é um projeto para a disciplina de Banco de Dados, desenvolvido por:
 - Ana Beatriz da Cunha Figueiredo 
 - José Dhonatas Alves Sales
 - Aldo Victor... (esqueci)
-- Samuel Oliveira...(esqueci)
+- Samuel dos Santos Oliveira
 
 ### Documentação da API
 
