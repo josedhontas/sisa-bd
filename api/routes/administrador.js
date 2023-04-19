@@ -17,14 +17,20 @@ module.exports = (pool) => {
   // Rota para criar um novo administrador
   router.post('/', async (req, res) => {
     try {
-      const { email} = req.body;
-      const result = await pool.query("INSERT INTO administrador (email, cargo) VALUES ($1, 'Administrador') RETURNING *", [email]);
-      res.status(201).json(result.rows[0]);
+      const { email } = req.body;
+      const autorResult = await pool.query("SELECT * FROM autor WHERE email = $1", [email]);
+      if (autorResult.rows.length > 0) {
+        res.status(400).json({ message: 'Não é possível adicionar este e-mail como administrador, pois já está registrado como autor.' });
+      } else {
+        const result = await pool.query("INSERT INTO administrador (email, cargo) VALUES ($1, 'Administrador') RETURNING *", [email]);
+        res.status(201).json(result.rows[0]);
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Erro ao criar novo administrador' });
     }
   });
+  
 
   // Rota para atualizar um administrador existente
   router.put('/:email', async (req, res) => {

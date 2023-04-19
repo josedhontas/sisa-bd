@@ -2,57 +2,67 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
+
+
+  // Rota para buscar todos os revisores
   router.get('/', async (req, res) => {
     try {
-      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email WHERE papel.nome_papel = 'Revisor'"); res.json(rows);
+      const result = await pool.query('SELECT * FROM revisor');
+      res.json(result.rows);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).send('Erro ao buscar revisores');
     }
   });
-
+  // Rota para buscar um revisor por email
   router.get('/:email', async (req, res) => {
-    const email = req.params.email;
     try {
-      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email where papel.nome_papel = 'Revisor' and usuario.email = $1", [email]);
-      res.json(rows);
+      const { email } = req.params;
+      const result = await pool.query('SELECT * FROM revisor WHERE email = $1', [email]);
+      res.status(200).json(result.rows[0]);
     } catch (error) {
-      res.status(500).json({ error: 'revisor nao encontrado' });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao buscar revisor por email' });
     }
   });
 
+  // Rota para criar um novo revisor
   router.post('/', async (req, res) => {
-    const {id_papel } = req.body;
-  
     try {
-      const { rows } = await pool.query('INSERT INTO revisor (id_papel) VALUES ($1) RETURNING *', [id_papel]);
-      res.json(rows[0]);
+      const { email } = req.body;
+      const result = await pool.query("INSERT INTO revisor (email, cargo) VALUES ($1, 'revisor') RETURNING *", [email]);
+      res.status(201).json(result.rows[0]);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao criar novo revisor' });
     }
   });
 
-  router.put('/:id', async (req, res) => {
-    const { id_revisor } = req.params;
-    const { id_papel} = req.body;
-  
+  // Rota para atualizar um revisor existente
+  router.put('/:email', async (req, res) => {
     try {
-      const { rows } = await pool.query('UPDATE revisor SET id_papel=$1 WHERE id_revisor=$2 RETURNING *', [id_papel, id_revisor]);
-      res.json(rows[0]);
+      const { email } = req.params;
+      const { cargo } = req.body;
+      const result = await pool.query('UPDATE revisor SET cargo = $1 WHERE email = $2 RETURNING *', [cargo, email]);
+      res.status(200).json(result.rows[0]);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao atualizar revisor' });
     }
   });
 
-  router.delete('/:id', async (req, res) => {
-    const { id_revisor } = req.params;
-  
+  // Rota para deletar um revisor existente
+  router.delete('/:email', async (req, res) => {
     try {
-      const { rows } = await pool.query('DELETE FROM revisor WHERE id_revisor=$1 RETURNING *', [id_revisor]);
-      res.json(rows[0]);
+      const { email } = req.params;
+      await pool.query('DELETE FROM revisor WHERE email = $1', [email]);
+      res.status(204).send();
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao deletar revisor' });
     }
   });
-  
+
+
   return router;
 };

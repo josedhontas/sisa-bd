@@ -2,57 +2,61 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
-  router.get('/', async (req, res) => {
-    try {
-      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email WHERE papel.nome_papel = 'Autor'"); res.json(rows);
-      res.json(rows);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
+  // Rota para buscar um autor por email
   router.get('/:email', async (req, res) => {
-    const email = req.params.email;
     try {
-      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email where papel.nome_papel = 'Autor' and usuario.email = $1", [email]);      res.json(rows);
+      const { email } = req.params;
+      const result = await pool.query('SELECT * FROM autor WHERE email = $1', [email]);
+      res.status(200).json(result.rows[0]);
     } catch (error) {
-      res.status(500).json({ error: 'autor nao encontrado' });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao buscar autor por email' });
     }
   });
 
+  // Rota para criar um novo autor
   router.post('/', async (req, res) => {
-    const {id_papel } = req.body;
-  
     try {
-      const { rows } = await pool.query('INSERT INTO autor (id_papel) VALUES ($1) RETURNING *', [id_papel]);
-      res.json(rows[0]);
+      const { email } = req.body;
+      const autorResult = await pool.query("SELECT * FROM administrador WHERE email = $1", [email]);
+      if (autorResult.rows.length > 0) {
+        res.status(400).json({ message: 'Não é possível adicionar este e-mail como autor, pois já está registrado como administrador.' });
+      } else {
+        const result = await pool.query("INSERT INTO autor (email, cargo) VALUES ($1, 'Autor') RETURNING *", [email]);
+        res.status(201).json(result.rows[0]);
+      }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao criar novo autor' });
+    }
+  });
+  
+
+  // Rota para atualizar um autor existente
+  router.put('/:email', async (req, res) => {
+    try {
+      const { email } = req.params;
+      const { cargo } = req.body;
+      const result = await pool.query('UPDATE autor SET cargo = $1 WHERE email = $2 RETURNING *', [cargo, email]);
+      res.status(200).json(result.rows[0]);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao atualizar autor' });
     }
   });
 
-  router.put('/:id', async (req, res) => {
-    const { id_autor } = req.params;
-    const { id_papel} = req.body;
-  
+  // Rota para deletar um autor existente
+  router.delete('/:email', async (req, res) => {
     try {
-      const { rows } = await pool.query('UPDATE autor SET id_papel=$1 WHERE id_autor=$2 RETURNING *', [id_papel, id_autor]);
-      res.json(rows[0]);
+      const { email } = req.params;
+      await pool.query('DELETE FROM autor WHERE email = $1', [email]);
+      res.status(204).send();
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao deletar autor' });
     }
   });
 
-  router.delete('/:id', async (req, res) => {
-    const { id_autor } = req.params;
-  
-    try {
-      const { rows } = await pool.query('DELETE FROM autor WHERE id_autor=$1 RETURNING *', [id_autor]);
-      res.json(rows[0]);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-  
+
   return router;
 };
