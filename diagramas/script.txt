@@ -72,16 +72,16 @@ CREATE TABLE avaliacao (
 );
 
 CREATE TABLE parecer (
+  id_parecer INT PRIMARY KEY,
   id_editor INT REFERENCES editor(id_editor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
   data DATE,
   comentario TEXT,
-  parecer VARCHAR,
-  PRIMARY KEY (id_editor, id_artigo)
+  parecer VARCHAR
 );
+
 
 CREATE TABLE submete (
   id_autor INT REFERENCES autor(id_autor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
-  PRIMARY KEY (id_autor, id_artigo)
 );
