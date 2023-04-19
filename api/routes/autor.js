@@ -6,7 +6,7 @@ module.exports = (pool) => {
   // Rota para buscar todos os autores
   router.get('/', async (req, res) => {
     try {
-      const result = await pool.query('SELECT * FROM autores');
+      const result = await pool.query('SELECT * FROM autor');
       res.json(result.rows);
     } catch (error) {
       console.error(error);
