@@ -2,58 +2,55 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
-  router.get('/', async (req, res) => {
-    try {
-      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email WHERE papel.nome_papel = 'Editor'"); res.json(rows);
-      res.json(rows);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
+  // Rota para buscar um editor por email
   router.get('/:email', async (req, res) => {
-    const email = req.params.email;
     try {
-      const { rows } = await pool.query("SELECT usuario.email, usuario.nome_completo,usuario.departamento, papel.nome_papel FROM usuario JOIN papel ON usuario.email = papel.email where papel.nome_papel = 'Editor' and usuario.email = $1", [email]);
-      res.json(rows);
+      const { email } = req.params;
+      const result = await pool.query('SELECT * FROM editor WHERE email = $1', [email]);
+      res.status(200).json(result.rows[0]);
     } catch (error) {
-      res.status(500).json({ error: 'editor nao encontrado' });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao buscar editor por email' });
     }
   });
 
+  // Rota para criar um novo editor
   router.post('/', async (req, res) => {
-    const {id_papel } = req.body;
-  
     try {
-      const { rows } = await pool.query('INSERT INTO editor (id_papel) VALUES ($1) RETURNING *', [id_papel]);
-      res.json(rows[0]);
+      const { email} = req.body;
+      const result = await pool.query("INSERT INTO editor (email, cargo) VALUES ($1, 'Editor') RETURNING *", [email]);
+      res.status(201).json(result.rows[0]);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao criar novo editor' });
     }
   });
 
-  router.put('/:id', async (req, res) => {
-    const { id_editor } = req.params;
-    const { id_papel} = req.body;
-  
+  // Rota para atualizar um editor existente
+  router.put('/:email', async (req, res) => {
     try {
-      const { rows } = await pool.query('UPDATE editor SET id_papel=$1 WHERE id_editor=$2 RETURNING *', [id_papel, id_editor]);
-      res.json(rows[0]);
+      const { email } = req.params;
+      const { cargo } = req.body;
+      const result = await pool.query('UPDATE editor SET cargo = $1 WHERE email = $2 RETURNING *', [cargo, email]);
+      res.status(200).json(result.rows[0]);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao atualizar editor' });
     }
   });
 
-  router.delete('/:id', async (req, res) => {
-    const { id_editor } = req.params;
-  
+  // Rota para deletar um editor existente
+  router.delete('/:email', async (req, res) => {
     try {
-      const { rows } = await pool.query('DELETE FROM editor WHERE id_editor=$1 RETURNING *', [id_editor]);
-      res.json(rows[0]);
+      const { email } = req.params;
+      await pool.query('DELETE FROM editor WHERE email = $1', [email]);
+      res.status(204).send();
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao deletar editor' });
     }
   });
-  
+
+
   return router;
 };
