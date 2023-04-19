@@ -4,7 +4,9 @@ CREATE TABLE usuario (
   senha VARCHAR NOT NULL,
   telefone VARCHAR,
   departamento VARCHAR,
-  descricao TEXT
+  descricao TEXT,
+  link_imagem VARCHAR
+
 );
 
 CREATE TABLE papel (
@@ -51,6 +53,7 @@ CREATE TABLE artigo (
   id_artigo INT PRIMARY KEY,
   id_revista INT REFERENCES revista(id_revista) ON DELETE SET NULL, -- Alteração aqui
   nome_artigo VARCHAR,
+  link_artigo VARCHAR,
   resumo TEXT
 );
 
