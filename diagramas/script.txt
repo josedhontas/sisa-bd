@@ -59,8 +59,8 @@ CREATE TABLE artigo (
 
 
 CREATE TABLE revisor (
-  id_revisor INT PRIMARY KEY,
-  id_papel INT REFERENCES papel(id_papel) ON DELETE CASCADE
+  id_revisor INT PRIMARY KEY REFERENCES papel(id_papel) ON DELETE CASCADE
+
 );
 
 CREATE TABLE avaliacao (
