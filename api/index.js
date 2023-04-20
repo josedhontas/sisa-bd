@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const pool = require('./database');
 const porta = 8000
@@ -13,6 +14,7 @@ const avaliacaoRoutes = require('./routes/avaliacao')(pool);
 const parecerRoutes = require('./routes/parecer')(pool);
 
 
+app.use(cors());
 app.use('/usuarios', usuariosRoutes);
 app.use('/editor', editorRoutes);
 app.use('/autor', autorRoutes);
