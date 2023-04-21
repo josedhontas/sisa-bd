@@ -7,7 +7,7 @@ module.exports = (pool) => {
   // Rota para buscar todos os revisores
   router.get('/', async (req, res) => {
     try {
-      const result = await pool.query('SELECT * FROM revisor');
+      const result = await pool.query('SELECT * FROM revisor inner join usuario using(emaiL)');
       res.json(result.rows);
     } catch (error) {
       console.error(error);
@@ -18,7 +18,7 @@ module.exports = (pool) => {
   router.get('/:email', async (req, res) => {
     try {
       const { email } = req.params;
-      const result = await pool.query('SELECT * FROM revisor WHERE email = $1', [email]);
+      const result = await pool.query('SELECT * FROM revisor inner join usuario using(email) WHERE email = $1' , [email]);
       res.status(200).json(result.rows[0]);
     } catch (error) {
       console.error(error);
