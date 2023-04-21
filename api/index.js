@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const pool = require('./database');
 const porta = 8000
+const revistaRoutes = require('./routes/revista')(pool);
 const usuariosRoutes = require('./routes/usuarios')(pool);
 const editorRoutes = require('./routes/editor')(pool);
 const autorRoutes = require('./routes/autor')(pool);
@@ -24,6 +25,8 @@ app.use('/administrador', administradorRoutes);
 app.use('/artigo', artigoRoutes);
 app.use('/avaliacao', avaliacaoRoutes);
 app.use('/parecer', parecerRoutes);
+app.use('/revista', revistaRoutes);
+
 
 
 app.listen(porta, () => {
