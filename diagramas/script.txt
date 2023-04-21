@@ -46,14 +46,14 @@ CREATE TABLE revista (
 );
 
 CREATE TABLE trabalha_editor (
-  id_editor INT REFERENCES editor(id_editor),
-  id_revista INT REFERENCES revista(id_revista),
+  id_editor INT REFERENCES editor(id_editor) ON DELETE CASCADE,
+  id_revista INT REFERENCES revista(id_revista) ON DELETE CASCADE,
   PRIMARY KEY (id_editor, id_revista)
 );
 
 CREATE TABLE trabalha_administrador (
-  id_administrador INT REFERENCES administrador(id_administrador),
-  id_revista INT REFERENCES revista(id_revista),
+  id_administrador INT REFERENCES administrador(id_administrador) ON DELETE CASCADE,
+  id_revista INT REFERENCES revista(id_revista) ON DELETE CASCADE,
   PRIMARY KEY (id_administrador, id_revista)
 );
 
