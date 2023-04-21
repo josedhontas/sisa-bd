@@ -6,6 +6,7 @@ const pool = new Pool({
   database: 'sisa',
   password: '6L!v#JpMxKtN0sW',
   port: 5432,
+  ssl: false,
 });
 
 module.exports = pool;
