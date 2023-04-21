@@ -1,72 +1,69 @@
--- Inserindo dados na tabela usuario
-INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, descricao) VALUES
-('usuario4@example.com', 'Usuário 4', 'senha123', '555-1234', 'Departamento 4', 'Descrição do usuário 4'),
-('usuario3@example.com', 'Usuário 3', 'senha456', '555-5678', 'Departamento 3', 'Descrição do usuário 3');
+INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem)
+VALUES
+('joao@gmail.com', 'João da Silva', '123456', '99999999', 'Departamento de Engenharia', 'Universidade Federal de São Paulo', 'Engenheiro Mecânico formado pela Universidade Federal de São Paulo', 'https://example.com/joao.jpg'),
+('maria@hotmail.com', 'Maria Souza', '654321', '88888888', 'Departamento de Letras', 'Universidade de São Paulo', 'Doutora em Literatura pela Universidade de São Paulo', 'https://example.com/maria.jpg'),
+('pedro@yahoo.com', 'Pedro Rodrigues', 'senha123', '77777777', 'Departamento de Ciências da Computação', 'Universidade Estadual de Campinas', 'Desenvolvedor de software com mais de 5 anos de experiência', 'https://example.com/pedro.jpg'),
+('ana@gmail.com', 'Ana Paula Santos', 'abcdef', '66666666', 'Departamento de Artes', 'Universidade de Brasília', 'Artista plástica com exposições em diversos países', 'https://example.com/ana.jpg'),
+('carlos@hotmail.com', 'Carlos Eduardo', '789456', '55555555', 'Departamento de Economia', 'Universidade Federal do Rio de Janeiro', 'Professor de Economia há mais de 10 anos', 'https://example.com/carlos.jpg');
 
--- Inserindo dados na tabela papel
-INSERT INTO papel (email, nome_papel) VALUES
-('usuario4@example.com', 'Revisor'),
-('usuario3@example.com', 'Revisor');
-('usuario4@example.com', 'Editor'),
-('usuario3@example.com', 'Editor'),
-('usuario4@example.com', 'Autor'),
-('usuario3@example.com', 'Autor'),
-('usuario4@example.com', 'Gestor'),
-('usuario3@example.com', 'Gestor'),
-('usuario4@example.com', 'Administrador'),
-('usuario3@example.com', 'Administrador');
+INSERT INTO editor (email, cargo)
+VALUES
+('joao@gmail.com', 'Editor'),
+('maria@hotmail.com', 'Editor');
 
--- Inserindo dados na tabela editor
-INSERT INTO editor (id_papel) VALUES
-(4),
-(3);
+INSERT INTO autor (email, cargo)
+VALUES
+('pedro@yahoo.com', 'Autor'),
+('ana@gmail.com', 'Autor'),
+('carlos@hotmail.com', 'Autor');
 
--- Inserindo dados na tabela autor
-INSERT INTO autor (id_papel) VALUES
-(4),
-(3);
+INSERT INTO revisor (email, cargo)
+VALUES
+('joao@gmail.com', 'Revisor'),
+('maria@hotmail.com', 'Revisor');
 
--- Inserindo dados na tabela gestor
-INSERT INTO gestor (id_papel) VALUES
-(4),
-(3);
+INSERT INTO gestor (email, cargo)
+VALUES
+('joao@gmail.com', 'Gerente de operações'),
+('maria@hotmail.com', 'Gerente de marketing');
 
--- Inserindo dados na tabela administrador
-INSERT INTO administrador (id_gestor, id_papel) VALUES
-(4, 4),
-(3, 3);
+INSERT INTO administrador (email, cargo)
+VALUES
+('joao@gmail.com', 'Administrador'),
+('maria@hotmail.com', 'Administrador');
 
--- Inserindo dados na tabela revista
-INSERT INTO revista (nome_revista, descricao) VALUES
-('Revista 4', 'Descrição da Revista 4'),
-('Revista 3', 'Descrição da Revista 3');
+INSERT INTO revista (nome_revista, descricao)
+VALUES
+('Revista de Engenharia', 'Revista especializada em Engenharia Mecânica e Elétrica'),
+('Revista de Literatura', 'Revista acadêmica de Literatura com foco em estudos comparados'),
+('Revista de Tecnologia', 'Revista sobre tecnologia e inovação');
 
--- Inserindo dados na tabela trabalha
-INSERT INTO trabalha (id_editor, id_revista, id_administrador) VALUES
-(4, 4, 4),
-(3, 3, 3);
+select * from administrador
+select * from revista
+select * from trabalha_administrador
+select * from trabalha_editor
+select * from editor
+INSERT INTO trabalha_editor (id_editor, id_revista)
+VALUES
+(1, 4),
+(2, 5),
+(1, 6),
+(2, 4);
 
--- Inserindo dados na tabela artigo
-INSERT INTO artigo (id_revista, nome_artigo, resumo) VALUES
-(4, 'Artigo 4', 'Resumo do Artigo 4'),
-(3, 'Artigo 3', 'Resumo do Artigo 3');
+select * from usuario
+select * from revista
+insert into trabalha_administrador(id_administrador, id_revista) values (2,2)
 
--- Inserindo dados na tabela revisor
-INSERT INTO revisor (id_papel) VALUES
-(4),
-(3);
 
--- Inserindo dados na tabela avaliacao
-INSERT INTO avaliacao (id_revisor, id_artigo, avaliacao, comentario) VALUES
-(4, 4, 'Aprovado', 'Comentário da Avaliação 4'),
-(3, 3, 'Reprovado', 'Comentário da Avaliação 3');
+ALTER TABLE trabalha_administrador DROP CONSTRAINT trabalha_administrador_id_revista_fkey;
+ALTER TABLE trabalha_administrador ADD CONSTRAINT trabalha_administrador_id_revista_fkey FOREIGN KEY (id_revista) REFERENCES revista(id_revista) ON DELETE CASCADE;
 
--- Inserindo dados na tabela parecer
-INSERT INTO parecer (id_editor, id_artigo, data, comentario, parecer) VALUES
-(4, 4, '2023-04-17', 'Comentário do Parecer 4', 'Aprovado'),
-(3, 3, '2023-04-18', 'Comentário do Parecer 3', 'Reprovado');
+select * from trabalha_editor;
+select * from revista
+delete from revista where id_revista = 2
+select * from trabalha_editor
+select * from usuario inner join editor using(email)
+select usuario.nome_completo, revista.nome_revista, revista.descricao from usuario inner join editor using(email) join trabalha_editor using(id_editor) join revista using(id_revista)
 
--- Inserindo dados na tabela submete
-INSERT INTO submete (id_autor, id_artigo) VALUES
-(4, 4),
-(3, 3);
+insert into trabalha_editor(id_editor, id_revista) values (2, 2)
+select * from revista
