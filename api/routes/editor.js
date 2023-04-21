@@ -7,7 +7,7 @@ module.exports = (pool) => {
   // Rota para buscar todos os editores e revistas deles
   router.get('/', async (req, res) => {
     try {
-      const result = await pool.query('select usuario.nome_completo, revista.nome_revista, revista.descricao from usuario inner join editor using(email) join trabalha_editor using(id_editor) join revista using(id_revista)');
+      const result = await pool.query('select usuario.nome_completo, revista.nome_revista, usuario.email, revista.descricao from usuario inner join editor using(email) join trabalha_editor using(id_editor) join revista using(id_revista)');
       res.json(result.rows);
     } catch (error) {
       console.error(error);
