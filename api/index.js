@@ -13,6 +13,8 @@ const administradorRoutes = require('./routes/administrador')(pool);
 const artigoRoutes = require('./routes/artigo')(pool);
 const avaliacaoRoutes = require('./routes/avaliacao')(pool);
 const parecerRoutes = require('./routes/parecer')(pool);
+const trabalha_administradorRoutes = require('./routes/trabalha_administrador')(pool);
+
 
 
 app.use(cors());
@@ -26,6 +28,7 @@ app.use('/artigo', artigoRoutes);
 app.use('/avaliacao', avaliacaoRoutes);
 app.use('/parecer', parecerRoutes);
 app.use('/revista', revistaRoutes);
+app.use('/trabalha_administrador', trabalha_administradorRoutes);
 
 
 
