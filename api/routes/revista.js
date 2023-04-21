@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
-  router.delete('/id:', async (req, res) => {
+  router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
       await pool.query('DELETE FROM revista WHERE id_revista = $1', [id]);
