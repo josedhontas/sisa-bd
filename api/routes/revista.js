@@ -3,6 +3,7 @@ const router = express.Router();
 
 module.exports = (pool) => {
 
+  // Retorna todas as revistas cadastradas
   router.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM revista');
@@ -11,6 +12,20 @@ module.exports = (pool) => {
       console.error(error);
       res.status(500).send('Erro ao buscar revista');
     }
+  });
+
+   // Retorna todas as revistas com o nome
+  router.get('/:nome', (req, res) => {
+    const nome = req.params.nome;
+    const query = `SELECT * FROM revista WHERE nome_revista LIKE '%${nome}%'`;
+    pool.query(query, (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Erro interno do servidor');
+      } else {
+        res.json(results.rows);
+      }
+    });
   });
 
   router.post('/', async (req, res) => {
