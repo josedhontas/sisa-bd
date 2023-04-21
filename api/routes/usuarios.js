@@ -30,34 +30,39 @@ module.exports = (pool) => {
   });
 
   // Rota para criar um usuário
-  router.post('/', async (req, res) => {
-    const { email, nome_completo, senha, telefone, departamento, descricao, link_imagem } = req.body;
-    try {
-      const result = await pool.query(
-        'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, descricao, link_imagem) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [email, nome_completo, senha, telefone, departamento, descricao, link_imagem]
-      );
-      res.status(201).json(result.rows[0]);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Erro ao criar usuário');
-    }
+  router.post('/', (req, res) => {
+    const { email, nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
+  
+    // Realizar a inserção no banco de dados
+    pool.query(
+      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+      [email, nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem],
+      (error, result) => {
+        if (error) {
+          res.status(500).send(error.message);
+        } else {
+          res.status(201).send('Usuário criado com sucesso!');
+        }
+      }
+    );
   });
 
   router.put('/:email', (req, res) => {
-    const email = req.params.email;
-    const { nome_completo, senha, telefone, departamento, descricao, link_imagem } = req.body;
-    const query = 'UPDATE usuario SET nome_completo=$1, senha=$2, telefone=$3, departamento=$4, descricao=$5, link_imagem=$6 WHERE email=$7';
+    const { nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
+    const { email } = req.params;
   
-    pool.query(query, [nome_completo, senha, telefone, departamento, descricao, link_imagem, email], (error, results) => {
-      if (error) {
-        console.error(error);
-        res.status(500).send('Erro ao atualizar usuário.');
-      } else {
-        res.status(200).send(`Usuário ${email} atualizado com sucesso.`);
-      }
-    });
+    // Aqui você deve validar os campos recebidos da requisição
+  
+    pool.query('UPDATE usuario SET nome_completo = $1, senha = $2, telefone = $3, departamento = $4, universidade = $5, descricao = $6, link_imagem = $7 WHERE email = $8', 
+      [nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem, email], 
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+        res.status(200).send(`Usuário atualizado com sucesso!`);
+      });
   });
+  
   
 
   router.delete('/:email', (req, res) => {
