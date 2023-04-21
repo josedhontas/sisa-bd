@@ -18,7 +18,7 @@ module.exports = (pool) => {
   router.get('/:email', async (req, res) => {
     try {
       const { email } = req.params;
-      const result = await pool.query('select usuario.nome_completo, revista.nome_revista, revista.descricao from usuario inner join editor using(email) WHERE email = $1', [email]);
+      const result = await pool.query('select usuario.nome_completo, usuario.email from usuario inner join administrador using(email) WHERE email = $1', [email]);
       res.status(200).json(result.rows[0]);
     } catch (error) {
       console.error(error);
