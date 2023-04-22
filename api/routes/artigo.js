@@ -44,6 +44,7 @@ module.exports = (pool) => {
   
   router.post('/', (req, res) => {
     const { id_revista, email_revisor, palavras_chaves, nome_artigo, msg_revisor, resumo } = req.body;
+    console.log(req.body)
     const artigo = req.file.buffer; // Acessando o buffer do arquivo enviado
     const query = 'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, artigo, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
     const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, artigo, msg_revisor, resumo];
