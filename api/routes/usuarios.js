@@ -51,7 +51,6 @@ module.exports = (pool) => {
     const { nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
     const { email } = req.params;
   
-    // Aqui você deve validar os campos recebidos da requisição
   
     pool.query('UPDATE usuario SET nome_completo = $1, senha = $2, telefone = $3, departamento = $4, universidade = $5, descricao = $6, link_imagem = $7 WHERE email = $8', 
       [nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem, email], 
