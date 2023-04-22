@@ -15,6 +15,61 @@ module.exports = (pool) => {
   });
 
 
+  router.post('/', (req, res) => {
+    const { id_revista, email_revisor, palavras_chaves, nome_artigo, link_artigo, msg_revisor, resumo } = req.body;
+    const query = 'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, link_artigo, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
+    const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, link_artigo, msg_revisor, resumo];
+    pool.query(query, values, (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Erro interno do servidor');
+      } else {
+        const id_artigo = results.rows[0].id_artigo;
+        res.status(201).json({ id_artigo, ...req.body });
+      }
+    });
+  });
+
+  router.put('/artigo/:id', (req, res) => {
+    const id = req.params.id;
+    const { id_revista, email_revisor, palavras_chaves, nome_artigo, link_artigo, msg_revisor, resumo } = req.body;
+  
+    // Verificar se o artigo com o id fornecido existe no banco de dados
+    db.query('SELECT * FROM artigo WHERE id_artigo = $1', [id], (err, result) => {
+      if (err) {
+        throw err;
+      }
+  
+      if (result.rows.length === 0) {
+        return res.status(404).send('Artigo não encontrado');
+      }
+  
+      // Atualizar o artigo no banco de dados
+      db.query('UPDATE artigo SET id_revista = $1, email_revisor = $2, palavras_chaves = $3, nome_artigo = $4, link_artigo = $5, msg_revisor = $6, resumo = $7 WHERE id_artigo = $8',
+        [id_revista, email_revisor, palavras_chaves, nome_artigo, link_artigo, msg_revisor, resumo, id], (err, result) => {
+          if (err) {
+            throw err;
+          }
+  
+          res.send('Artigo atualizado com sucesso');
+        });
+    });
+  });
+
+  router.delete('/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      await pool.query('DELETE FROM artigo WHERE id_artigo = $1', [id]);
+      res.status(204).send();
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao deletar artigo' });
+    }
+  });
+  
+  
+
+
 
   return router;
 };
