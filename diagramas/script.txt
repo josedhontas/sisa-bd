@@ -63,7 +63,7 @@ CREATE TABLE artigo (
   email_revisor VARCHAR,
   palavras_chaves TEXT,
   nome_artigo VARCHAR,
-  link_artigo VARCHAR,
+  artigo bytea;,
   msg_revisor TEXT,
   resumo TEXT
 );

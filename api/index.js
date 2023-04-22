@@ -16,6 +16,7 @@ const parecerRoutes = require('./routes/parecer')(pool);
 const trabalha_administradorRoutes = require('./routes/trabalha_administrador')(pool);
 
 
+app.use(express.json());
 
 app.use(cors());
 app.use('/usuarios', usuariosRoutes);

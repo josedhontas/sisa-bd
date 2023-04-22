@@ -31,12 +31,12 @@ module.exports = (pool) => {
 
   // Rota para criar um usuário
   router.post('/', (req, res) => {
-    const { email, nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
+    const { email, nome_completo, senha, telefone, departamento, universidade} = req.body;
   
     // Realizar a inserção no banco de dados
     pool.query(
-      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-      [email, nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem],
+      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade) VALUES ($1, $2, $3, $4, $5, $6)',
+      [email, nome_completo, senha, telefone, departamento, universidade],
       (error, result) => {
         if (error) {
           res.status(500).send(error.message);

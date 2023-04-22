@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 
 module.exports = (pool) => {
@@ -42,12 +43,13 @@ module.exports = (pool) => {
 
 
   
-  router.post('/', (req, res) => {
+  router.post('/', upload.single('artigo_pdf'), (req, res) => {
     const { id_revista, email_revisor, palavras_chaves, nome_artigo, msg_revisor, resumo } = req.body;
-    console.log(req.body)
-    const artigo = req.file.buffer; // Acessando o buffer do arquivo enviado
-    const query = 'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, artigo, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
-    const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, artigo, msg_revisor, resumo];
+    console.log(req.body);
+    const artigo_pdf = req.file.buffer; // Acessando o buffer do arquivo enviado
+    const query =
+      'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, artigo_pdf, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
+    const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, artigo_pdf, msg_revisor, resumo];
     pool.query(query, values, (error, results) => {
       if (error) {
         console.error(error);
