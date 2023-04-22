@@ -13,6 +13,26 @@ module.exports = (pool) => {
     }
   });
 
+  //Rota para autentificar um usuario
+  router.get('/:email/:senha', (req, res) => {
+    const email = req.params.email;
+    const senha = req.params.senha;
+  
+    // Executa a consulta SQL para verificar se o e-mail e a senha existem na tabela
+    connection.query('SELECT email FROM usuario WHERE email = ? AND senha = ?', [email, senha], (err, results) => {
+      if (err) {
+        return res.status(500).send('Erro ao verificar o usuário no banco de dados');
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).send('Usuário não encontrado');
+      }
+  
+      const usuario = results[0];
+      return res.status(200).json(usuario);
+    });
+  });
+
   // Rota para buscar um usuário por email
   router.get('/:email', async (req, res) => {
     const { email } = req.params;
