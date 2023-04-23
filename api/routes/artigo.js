@@ -1,7 +1,28 @@
 const express = require('express');
+const AWS = require('aws-sdk');
 const router = express.Router();
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const multerS3 = require('multer-s3');
+
+const s3 = new AWS.S3({
+  accessKeyId: 'AKIAUBXBIDPATQNYLL4X',
+  secretAccessKey: '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',
+  region: 'us-east-2'
+  
+});
+
+const upload = multer({
+  storage: multerS3({
+      s3: s3,
+      bucket: 'sisa-bucket',
+      metadata: function (request, file, cb) {
+          cb(null, { fieldName: file.fieldname });
+      },
+      key: function (request, file, cb) {
+          cb(null, Date.now().toString() + '-' + file.originalname);
+      }
+  })
+});
 
 
 module.exports = (pool) => {
@@ -43,23 +64,24 @@ module.exports = (pool) => {
 
 
   
-  router.post('/', upload.single('artigo_pdf'), (req, res) => {
+  router.post('/', upload.single('pdf'), (req, res) => {
+    const pdf = req.file;
+    const link = pdf.location; // pega o link do pdf no s3
     const { id_revista, email_revisor, palavras_chaves, nome_artigo, msg_revisor, resumo } = req.body;
-    console.log(req.body);
-    const artigo_pdf = req.file.buffer; // Acessando o buffer do arquivo enviado
     const query =
-      'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, artigo_pdf, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
-    const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, artigo_pdf, msg_revisor, resumo];
+      'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, link_artigo, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
+    const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, link, msg_revisor, resumo];
     pool.query(query, values, (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send('Erro interno do servidor');
       } else {
         const id_artigo = results.rows[0].id_artigo;
-        res.status(201).json({ id_artigo, ...req.body });
+        res.status(201).json({ id_artigo, ...req.body, link_artigo: link });
       }
     });
   });
+  
   
   
 
