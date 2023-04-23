@@ -3,6 +3,26 @@ const router = express.Router();
 
 module.exports = (pool) => {
 
+  //Middlewares
+  const existeUsuario = async (req, res, next)=>{
+    const { email } = req.params;
+    try {
+      const result = await pool.query(`SELECT * FROM usuario WHERE email = '${email}'`);
+      if(result.rows.length === 0){
+        return res.status(404).send('Usuario nao cadastrado');
+      }
+      req.usuario = result.rows[0];
+      next();
+    } catch(error){
+      console.error(error);
+      res.status(500).json({error:'Erro ao verificar existencia de usuario'});
+    }
+    
+
+    
+  }
+
+
   // Retorna todas as revistas cadastradas
   router.get('/', async (req, res) => {
     try {
@@ -28,20 +48,8 @@ module.exports = (pool) => {
     });
   });
 
-  router.post('/', async (req, res) => {
-    const { nome_revista, descricao } = req.body;
-  
-    try {
-      const novaRevista = await pool.query(
-        'INSERT INTO revista (nome_revista, descricao) VALUES ($1, $2) RETURNING *',
-        [nome_revista, descricao]
-      );
-  
-      res.status(201).json(novaRevista.rows[0]);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ error: 'Erro ao adicionar revista' });
-    }
+  router.post('/', existeUsuario, async (req, res, next) => {
+    
   });
   router.put('/:id', async (req, res) => {
     const { id } = req.params;

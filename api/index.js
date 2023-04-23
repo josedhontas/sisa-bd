@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const bp = require('body-parser');
 const app = express();
 const pool = require('./database');
 const porta = 8000
@@ -15,7 +16,7 @@ const avaliacaoRoutes = require('./routes/avaliacao')(pool);
 const parecerRoutes = require('./routes/parecer')(pool);
 const trabalha_administradorRoutes = require('./routes/trabalha_administrador')(pool);
 
-
+app.use(bp.urlencoded({extended:true}));
 app.use(express.json());
 
 app.use(cors());
