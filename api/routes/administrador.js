@@ -32,7 +32,7 @@ module.exports = (pool) => {
       const { email } = req.body;
       const autorResult = await pool.query("SELECT * FROM autor WHERE email = $1", [email]);
       if (autorResult.rows.length >= 0) {
-        res.status(400).json({ message: 'Não é possível adicionar este e-mail como administrador, pois já está registrado como autor.' });
+        await pool.query("DELETE FROM autor where email = $1", [email]);
       } else {
         const result = await pool.query("INSERT INTO administrador (email, cargo) VALUES ($1, 'Administrador') RETURNING *", [email]);
         res.status(201).json(result.rows[0]);
