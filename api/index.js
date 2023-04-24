@@ -32,7 +32,7 @@ app.use('/avaliacao', avaliacaoRoutes);
 app.use('/parecer', parecerRoutes);
 app.use('/revista', revistaRoutes);
 app.use('/trabalha_administrador', trabalha_administradorRoutes);
-app.use('/trabalha_editor', trabalha_editorRoutes);
+app.use('/trabalhaEditor', trabalha_editorRoutes);
 
 
 
