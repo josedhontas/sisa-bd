@@ -67,10 +67,10 @@ module.exports = (pool) => {
         if (error) {
           res.status(500).send(error.message);
         } else {
-          // Inserir o usuário na tabela autor
+          // Adicionar usuário à tabela "autor"
           pool.query(
-            'INSERT INTO autor (email) VALUES ($1)',
-            [email],
+            'INSERT INTO autor (email, cargo) VALUES ($1, $2)',
+            [email, 'Autor'],
             (error, result) => {
               if (error) {
                 res.status(500).send(error.message);
@@ -84,6 +84,7 @@ module.exports = (pool) => {
     );
   });
   
+
   router.put('/:email', authenticate, (req, res) => {
     const { nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
     const { email } = req.params;
