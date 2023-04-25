@@ -14,6 +14,22 @@ module.exports = (pool) => {
     }
   });
 
+  //rota autenticar admin por email e senha
+  router.get('/:email/:senha', async (req, res) => {
+    const { email, senha } = req.params;
+    try {
+      const result = await pool.query('SELECT * FROM usuario join administrador using(email) WHERE email = $1 and senha = $2', [email, senha]);
+      if (result.rows.length === 0) {
+        res.status(404).send('Admin não encontrado');
+      } else {
+        res.json(result.rows[0]);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erro ao buscar usuário');
+    }
+  });
+
   // Rota para buscar um administrador por email
   router.get('/:email', async (req, res) => {
     try {
