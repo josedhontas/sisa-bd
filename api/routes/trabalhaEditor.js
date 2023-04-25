@@ -27,4 +27,5 @@ router.get('/', async (req, res) => {
       res.status(500).json({ message: 'Erro ao relacionar o editor com a revista' });
     }
   });
+  return router
 };
