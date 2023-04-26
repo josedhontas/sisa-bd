@@ -3,10 +3,10 @@ const router = express.Router();
 
 module.exports = (pool) => {
 
-  // Rota para buscar todos os administradores
+  // Rota para buscar todos os administradores e o nome
   router.get('/', async (req, res) => {
     try {
-      const result = await pool.query('SELECT * FROM administrador');
+      const result = await pool.query('SELECT usuario.nome_completo, usuario.email FROM usuario INNER JOIN administrador USING(email)');
       res.json(result.rows);
     } catch (error) {
       console.error(error);
