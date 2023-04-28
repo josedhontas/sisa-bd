@@ -82,35 +82,34 @@ module.exports = (pool) => {
     });
   });
   
-  
-  
-  
 
   router.put('/:id', (req, res) => {
     const id = req.params.id;
-    const { id_revista, email_revisor, palavras_chaves, nome_artigo,  msg_revisor, resumo } = req.body;
+    const { email_revisor, msg_revisor } = req.body;
   
     // Verificar se o artigo com o id fornecido existe no banco de dados
-    db.query('SELECT * FROM artigo WHERE id_artigo = $1', [id], (err, result) => {
-      if (err) {
-        throw err;
-      }
-  
-      if (result.rows.length === 0) {
-        return res.status(404).send('Artigo não encontrado');
-      }
-  
-      // Atualizar o artigo no banco de dados
-      db.query('UPDATE artigo SET id_revista = $1, email_revisor = $2, palavras_chaves = $3, nome_artigo = $4, artigo = $5, msg_revisor = $6, resumo = $7 WHERE id_artigo = $8',
-        [id_revista, email_revisor, palavras_chaves, nome_artigo, artigo, msg_revisor, resumo, id], (err, result) => {
-          if (err) {
-            throw err;
+    pool.query('SELECT * FROM artigo WHERE id_artigo = $1', [id], (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Erro interno do servidor');
+      } else if (results.rowCount === 0) {
+        res.status(404).send('Artigo não encontrado');
+      } else {
+        // Atualizar o artigo no banco de dados
+        const query = 'UPDATE artigo SET email_revisor = $1, msg_revisor = $2 WHERE id_artigo = $3';
+        const values = [email_revisor, msg_revisor, id];
+        pool.query(query, values, (error, results) => {
+          if (error) {
+            console.error(error);
+            res.status(500).send('Erro interno do servidor');
+          } else {
+            res.status(200).send('Artigo atualizado com sucesso');
           }
-  
-          res.send('Artigo atualizado com sucesso');
         });
+      }
     });
   });
+  
 
   router.delete('/:id', async (req, res) => {
     try {
