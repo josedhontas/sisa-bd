@@ -58,20 +58,32 @@ module.exports = (pool) => {
   // Rota para criar um usuário
   router.post('/', authenticate, (req, res) => {
     const { email, nome_completo, senha, telefone, departamento, universidade } = req.body;
-
+  
     // Realizar a inserção no banco de dados
     pool.query(
-      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade) VALUES ($1, $2, $3, $4, $5, $6)',
+      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [email, nome_completo, senha, telefone, departamento, universidade],
       (error, result) => {
         if (error) {
           res.status(500).send(error.message);
         } else {
-          res.status(201).send('Usuário criado com sucesso!');
+          // Adicionar usuário à tabela "autor"
+          pool.query(
+            'INSERT INTO autor (email, cargo) VALUES ($1, $2)',
+            [email, 'Autor'],
+            (error, result) => {
+              if (error) {
+                res.status(500).send(error.message);
+              } else {
+                res.status(201).send('Usuário criado com sucesso!');
+              }
+            }
+          );
         }
       }
     );
   });
+  
 
   router.put('/:email', authenticate, (req, res) => {
     const { nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;

@@ -14,7 +14,9 @@ const administradorRoutes = require('./routes/administrador')(pool);
 const artigoRoutes = require('./routes/artigo')(pool);
 const avaliacaoRoutes = require('./routes/avaliacao')(pool);
 const parecerRoutes = require('./routes/parecer')(pool);
-const trabalha_administradorRoutes = require('./routes/trabalha_administrador')(pool);
+const trabalhaAdministradorRoutes = require('./routes/trabalhaAdministrador')(pool);
+const trabalhaEditorRoutes = require('./routes/trabalhaEditor')(pool);
+
 
 app.use(bp.urlencoded({extended:true}));
 app.use(express.json());
@@ -30,7 +32,9 @@ app.use('/artigo', artigoRoutes);
 app.use('/avaliacao', avaliacaoRoutes);
 app.use('/parecer', parecerRoutes);
 app.use('/revista', revistaRoutes);
-app.use('/trabalha_administrador', trabalha_administradorRoutes);
+app.use('/trabalhaAdministrador', trabalhaAdministradorRoutes);
+app.use('/trabalhaEditor', trabalhaEditorRoutes);
+
 
 
 

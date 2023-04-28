@@ -1,7 +1,28 @@
 const express = require('express');
+const AWS = require('aws-sdk');
 const router = express.Router();
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const multerS3 = require('multer-s3');
+
+const s3 = new AWS.S3({
+  accessKeyId: 'AKIAUBXBIDPATQNYLL4X',
+  secretAccessKey: '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',
+  region: 'us-east-2'
+  
+});
+
+const upload = multer({
+  storage: multerS3({
+      s3: s3,
+      bucket: 'sisa-bucket',
+      metadata: function (request, file, cb) {
+          cb(null, { fieldName: file.fieldname });
+      },
+      key: function (request, file, cb) {
+          cb(null, Date.now().toString() + '-' + file.originalname);
+      }
+  })
+});
 
 
 module.exports = (pool) => {
@@ -43,51 +64,52 @@ module.exports = (pool) => {
 
 
   
-  router.post('/', upload.single('artigo_pdf'), (req, res) => {
-    const { id_revista, email_revisor, palavras_chaves, nome_artigo, msg_revisor, resumo } = req.body;
-    console.log(req.body);
-    const artigo_pdf = req.file.buffer; // Acessando o buffer do arquivo enviado
+  router.post('/', upload.single('pdf'), (req, res) => {
+    const pdf = req.file;
+    const link = pdf.location; // pega o link do pdf no s3
+    const { id_revista, palavras_chaves, nome_artigo, resumo } = req.body;
     const query =
-      'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, artigo_pdf, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
-    const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, artigo_pdf, msg_revisor, resumo];
+      'INSERT INTO artigo (id_revista, palavras_chaves, nome_artigo, link_artigo, resumo) VALUES ($1, $2, $3, $4, $5) RETURNING id_artigo';
+    const values = [id_revista, palavras_chaves, nome_artigo, link, resumo];
     pool.query(query, values, (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send('Erro interno do servidor');
       } else {
         const id_artigo = results.rows[0].id_artigo;
-        res.status(201).json({ id_artigo, ...req.body });
+        res.status(201).json({ id_artigo : id_artigo });
       }
     });
   });
-  
   
 
   router.put('/:id', (req, res) => {
     const id = req.params.id;
-    const { id_revista, email_revisor, palavras_chaves, nome_artigo,  msg_revisor, resumo } = req.body;
+    const { email_revisor, msg_revisor } = req.body;
   
     // Verificar se o artigo com o id fornecido existe no banco de dados
-    db.query('SELECT * FROM artigo WHERE id_artigo = $1', [id], (err, result) => {
-      if (err) {
-        throw err;
-      }
-  
-      if (result.rows.length === 0) {
-        return res.status(404).send('Artigo não encontrado');
-      }
-  
-      // Atualizar o artigo no banco de dados
-      db.query('UPDATE artigo SET id_revista = $1, email_revisor = $2, palavras_chaves = $3, nome_artigo = $4, artigo = $5, msg_revisor = $6, resumo = $7 WHERE id_artigo = $8',
-        [id_revista, email_revisor, palavras_chaves, nome_artigo, artigo, msg_revisor, resumo, id], (err, result) => {
-          if (err) {
-            throw err;
+    pool.query('SELECT * FROM artigo WHERE id_artigo = $1', [id], (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Erro interno do servidor');
+      } else if (results.rowCount === 0) {
+        res.status(404).send('Artigo não encontrado');
+      } else {
+        // Atualizar o artigo no banco de dados
+        const query = 'UPDATE artigo SET email_revisor = $1, msg_revisor = $2 WHERE id_artigo = $3';
+        const values = [email_revisor, msg_revisor, id];
+        pool.query(query, values, (error, results) => {
+          if (error) {
+            console.error(error);
+            res.status(500).send('Erro interno do servidor');
+          } else {
+            res.status(200).send('Artigo atualizado com sucesso');
           }
-  
-          res.send('Artigo atualizado com sucesso');
         });
+      }
     });
   });
+  
 
   router.delete('/:id', async (req, res) => {
     try {
