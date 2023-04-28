@@ -47,12 +47,12 @@ module.exports = (pool) => {
 
   //Rota responsável por cadastrar administrador
   router.post('/', (req, res) => {
-    const { email, nome_completo, senha, telefone, departamento, universidade } = req.body;
-  
+    const { email, nome_completo} = req.body;
+    const senha = '1234567'
     // Realizar a inserção no banco de dados
     pool.query(
-      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [email, nome_completo, senha, telefone, departamento, universidade],
+      'INSERT INTO usuario (email, nome_completo, senha) VALUES ($1, $2, $3) RETURNING *',
+      [email, nome_completo, senha],
       (error, result) => {
         if (error) {
           res.status(500).send(error.message);
