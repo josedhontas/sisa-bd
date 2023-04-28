@@ -67,20 +67,21 @@ module.exports = (pool) => {
   router.post('/', upload.single('pdf'), (req, res) => {
     const pdf = req.file;
     const link = pdf.location; // pega o link do pdf no s3
-    const { id_revista, email_revisor, palavras_chaves, nome_artigo, msg_revisor, resumo } = req.body;
+    const { id_revista, palavras_chaves, nome_artigo, resumo } = req.body;
     const query =
-      'INSERT INTO artigo (id_revista, email_revisor, palavras_chaves, nome_artigo, link_artigo, msg_revisor, resumo) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_artigo';
-    const values = [id_revista, email_revisor, palavras_chaves, nome_artigo, link, msg_revisor, resumo];
+      'INSERT INTO artigo (id_revista, palavras_chaves, nome_artigo, link_artigo, resumo) VALUES ($1, $2, $3, $4, $5) RETURNING id_artigo';
+    const values = [id_revista, palavras_chaves, nome_artigo, link, resumo];
     pool.query(query, values, (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send('Erro interno do servidor');
       } else {
         const id_artigo = results.rows[0].id_artigo;
-        res.status(201).json({ id_artigo, ...req.body, link_artigo: link });
+        res.status(201).json({ id_artigo : id_artigo });
       }
     });
   });
+  
   
   
   
