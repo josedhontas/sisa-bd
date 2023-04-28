@@ -18,7 +18,7 @@ const trabalha_administradorRoutes = require('./routes/trabalha_administrador')(
 
 app.use(bp.urlencoded({extended:true}));
 app.use(express.json());
-
+  
 app.use(cors());
 app.use('/usuarios', usuariosRoutes);
 app.use('/editor', editorRoutes);
