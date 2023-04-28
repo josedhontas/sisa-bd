@@ -4,24 +4,23 @@ const router = express.Router();
 module.exports = (pool) => {
 
   //Middlewares
-  const existeUsuario = async (req, res, next)=>{
+  const existsUser = async (req, res, next)=>{
     const { email } = req.params;
     try {
-      const result = await pool.query(`SELECT * FROM usuario WHERE email = '${email}'`);
-      if(result.rows.length === 0){
-        return res.status(404).send('Usuario nao cadastrado');
+      const result = await pool.query('SELECT * FROM usuario WHERE email = $1', [email]);
+      if (result.rows.length === 0) {
+        res.status(404).send('Usuário não encontrado');
+        return;
+      } else {
+        res.json(result.rows[0]);
+        next();
       }
-      req.usuario = result.rows[0];
-      next();
-    } catch(error){
+    } catch (error) {
       console.error(error);
-      res.status(500).json({error:'Erro ao verificar existencia de usuario'});
+      res.status(500).send('Erro ao buscar usuário');
     }
-    
-
-    
   }
-
+  
 
   // Retorna todas as revistas cadastradas
   router.get('/', async (req, res) => {
@@ -48,9 +47,44 @@ module.exports = (pool) => {
     });
   });
 
-  router.post('/', existeUsuario, async (req, res, next) => {
+  // insere nova revista 
+  
+  router.post('/', async (req, res, next) => {
+    const { nome_revista, descricao, email } = req.body;
+    console.log(email, nome_revista)
+  
+    try {
+      const result = await pool.query(`SELECT * FROM usuario WHERE email = '${email}'`);
+      if (result.rows.length === 0) {
+        res.status(404).send('Usuário não encontrado');
+        return;
+      }
+  
+      const editorResult = await pool.query(
+        'INSERT INTO editor (email, cargo) VALUES ($1, $2) RETURNING id_editor',
+        [email, 'Editor']
+      );
+      const editorId = editorResult.rows[0].id_editor;
     
+      const revistaResult = await pool.query(
+        'INSERT INTO revista (nome_revista, descricao) VALUES ($1, $2) RETURNING id_revista',
+        [nome_revista, descricao]
+      );
+      const revistaId = revistaResult.rows[0].id_revista;
+  
+      await pool.query(
+        'INSERT INTO trabalha_editor (id_editor, id_revista) VALUES ($1, $2)',
+        [editorId, revistaId]
+      );
+  
+      res.status(201).json(revistaResult.rows[0]);
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Erro ao adicionar revista' });
+    }
   });
+  
   router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { nome_revista, descricao } = req.body;
