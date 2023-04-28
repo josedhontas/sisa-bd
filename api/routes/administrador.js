@@ -9,7 +9,7 @@ module.exports = (pool) => {
   // Rota para buscar todos os administradores e o nome
   router.get('/', async (req, res) => {
     try {
-      const result = await pool.query('SELECT usuario.nome_completo, usuario.email FROM usuario INNER JOIN administrador USING(email)');
+      const result = await pool.query('SELECT usuario.nome_completo, usuario.email, administrador.cargo FROM usuario INNER JOIN administrador USING(email)');
       res.json(result.rows);
     } catch (error) {
       console.error(error);
@@ -45,7 +45,7 @@ module.exports = (pool) => {
     }
   });
 
-
+  //Rota responsável por cadastrar administrador
   router.post('/', (req, res) => {
     const { email, nome_completo, senha, telefone, departamento, universidade } = req.body;
   
@@ -60,7 +60,7 @@ module.exports = (pool) => {
           // Adicionar usuário à tabela "autor"
           pool.query(
             'INSERT INTO administrador (email, cargo) VALUES ($1, $2)',
-            [email, 'Administrador'],
+            [email, 'Administrador_nao_validado'],
             (error, result) => {
               if (error) {
                 res.status(500).send(error.message);
