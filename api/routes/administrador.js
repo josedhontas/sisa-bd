@@ -4,21 +4,7 @@ const router = express.Router();
 module.exports = (pool) => {
 
   //Middlewares
-  const cadastrarUsuarioAdmin = (req, res, next)=>{
-    const {email, nome_completo, senha, telefone, departamento, universidade} = req.body
-    pool.query(
-      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [email, nome_completo, senha, telefone, departamento, universidade],
-      (error, res) => {
-        if (error) {
-          res.status(500).send(error.message);
-        } else {
-          res.status(200).send('Usuario cadastrado com sucesso!');
-          next();
-        }
-      }
-    );
-  }
+  
 
   // Rota para buscar todos os administradores e o nome
   router.get('/', async (req, res) => {
@@ -59,22 +45,35 @@ module.exports = (pool) => {
     }
   });
 
-  // Rota para criar um novo administrador
-  router.post('/', cadastrarUsuarioAdmin,  async (req, res) => {
-    try {
-      const { email } = req.body;
-      const autorResult = await pool.query("SELECT * FROM autor WHERE email = $1", [email]);
-      if (autorResult.rows.length >= 0) {
-        await pool.query("DELETE FROM autor where email = $1", [email]);
-      } else {
-        const result = await pool.query("INSERT INTO administrador (email, cargo) VALUES ($1, 'Administrador') RETURNING *", [email]);
-        res.status(201).json(result.rows[0]);
+
+  router.post('/', (req, res) => {
+    const { email, nome_completo, senha, telefone, departamento, universidade } = req.body;
+  
+    // Realizar a inserção no banco de dados
+    pool.query(
+      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [email, nome_completo, senha, telefone, departamento, universidade],
+      (error, result) => {
+        if (error) {
+          res.status(500).send(error.message);
+        } else {
+          // Adicionar usuário à tabela "autor"
+          pool.query(
+            'INSERT INTO administrador (email, cargo) VALUES ($1, $2)',
+            [email, 'Administrador'],
+            (error, result) => {
+              if (error) {
+                res.status(500).send(error.message);
+              } else {
+                res.status(201).send('Usuário criado com sucesso!');
+              }
+            }
+          );
+        }
       }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Erro ao criar novo administrador' });
-    }
+    );
   });
+  
 
 
   // Rota para atualizar um administrador existente
