@@ -47,12 +47,12 @@ module.exports = (pool) => {
 
   //Rota responsável por cadastrar administrador
   router.post('/', (req, res) => {
-    const { email, nome_completo} = req.body;
-    const senha = '1234567'
+    const { email, nome_completo, senha, telefone, departamento, universidade } = req.body;
+  
     // Realizar a inserção no banco de dados
     pool.query(
-      'INSERT INTO usuario (email, nome_completo, senha) VALUES ($1, $2, $3) RETURNING *',
-      [email, nome_completo, senha],
+      'INSERT INTO usuario (email, nome_completo, senha, telefone, departamento, universidade) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [email, nome_completo, senha, telefone, departamento, universidade],
       (error, result) => {
         if (error) {
           res.status(500).send(error.message);
@@ -77,35 +77,17 @@ module.exports = (pool) => {
 
 
   // Rota para atualizar um administrador existente
-  router.put('/:email', (req, res) => {
-    const { email } = req.params;
-    const { novoEmail, novoNomeCompleto } = req.body;
-  
-    // Atualizar o email e nome completo do usuário
-    pool.query(
-      'UPDATE usuario SET email = $1, nome_completo = $2 WHERE email = $3',
-      [novoEmail, novoNomeCompleto, email],
-      (error, result) => {
-        if (error) {
-          res.status(500).send(error.message);
-        } else {
-          // Atualizar o email do administrador na tabela "administrador"
-          pool.query(
-            'UPDATE administrador SET email = $1 WHERE email = $2',
-            [novoEmail, email],
-            (error, result) => {
-              if (error) {
-                res.status(500).send(error.message);
-              } else {
-                res.status(200).send('Administrador atualizado com sucesso!');
-              }
-            }
-          );
-        }
-      }
-    );
+  router.put('/:email', async (req, res) => {
+    try {
+      const { email } = req.params;
+      const { cargo } = req.body;
+      const result = await pool.query('UPDATE administrador SET cargo = $1 WHERE email = $2 RETURNING *', [cargo, email]);
+      res.status(200).json(result.rows[0]);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao atualizar administrador' });
+    }
   });
-  
 
   // Rota para deletar um administrador existente
   router.delete('/:email', async (req, res) => {
