@@ -16,6 +16,8 @@ const avaliacaoRoutes = require('./routes/avaliacao')(pool);
 const parecerRoutes = require('./routes/parecer')(pool);
 const trabalhaAdministradorRoutes = require('./routes/trabalhaAdministrador')(pool);
 const trabalhaEditorRoutes = require('./routes/trabalhaEditor')(pool);
+const submeteRoutes = require('./routes/submete')(pool);
+
 
 
 app.use(bp.urlencoded({extended:true}));
@@ -34,8 +36,8 @@ app.use('/parecer', parecerRoutes);
 app.use('/revista', revistaRoutes);
 app.use('/trabalhaAdministrador', trabalhaAdministradorRoutes);
 app.use('/trabalhaEditor', trabalhaEditorRoutes);
-
-
+app.use('/trabalhaEditor', trabalhaEditorRoutes);
+app.use('/submete', submeteRoutes);
 
 
 app.listen(porta, () => {
