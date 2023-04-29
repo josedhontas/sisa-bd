@@ -22,13 +22,15 @@ module.exports = (pool) => {
       const email = req.params.email;
   
       const query = `
-        SELECT artigo.*, revista.nome_revista
-        FROM artigo
-        JOIN revista ON artigo.id_revista = revista.id_revista
-        JOIN trabalha_editor ON revista.id_revista = trabalha_editor.id_revista
-        JOIN editor ON trabalha_editor.id_editor = editor.id_editor
-        JOIN usuario ON editor.email = usuario.email
-        WHERE usuario.email = $1
+      SELECT a.nome_artigo, a.palavras_chaves, a.resumo, a.link_artigo, u.nome_completo AS nome_autor, r.nome_revista
+      FROM artigo AS a
+      JOIN submete AS s ON s.id_artigo = a.id_artigo
+      JOIN autor AS au ON au.id_autor = s.id_autor
+      JOIN usuario AS u ON u.email = au.email
+      JOIN trabalha_editor AS te ON te.id_revista = a.id_revista
+      JOIN editor AS e ON e.id_editor = te.id_editor
+      JOIN revista AS r ON r.id_revista = a.id_revista
+      WHERE e.email = $1;
       `;
       const result = await pool.query(query, [email]);
   
