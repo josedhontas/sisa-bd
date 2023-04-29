@@ -3,7 +3,7 @@ const router = express.Router();
 
 module.exports = (pool) => {
 
-    router.post('/submete', async (req, res) => {
+    router.post('/', async (req, res) => {
         try {
           const { email, id_artigo } = req.body;
       
