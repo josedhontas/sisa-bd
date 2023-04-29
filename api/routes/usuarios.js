@@ -99,7 +99,7 @@ module.exports = (pool) => {
         } else {
           // Insere o email na tabela autor
           try {
-            const queryAutor = await pool.query('INSERT INTO autor (email) VALUES ($1) RETURNING *', [email]);
+            const queryAutor = await pool.query("INSERT INTO autor (email, cargo) VALUES ($1, 'Autor') RETURNING *", [email]);
             console.log(`Email ${email} inserido na tabela autor com sucesso!`);
           } catch (err) {
             console.error(err);
