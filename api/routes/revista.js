@@ -5,7 +5,7 @@ module.exports = (pool) => {
 
   //Middlewares
   const existsUser = async (req, res, next)=>{
-    const { email } = req.params;
+    const { email } = req.body;
     try {
       const result = await pool.query('SELECT * FROM usuario WHERE email = $1', [email]);
       if (result.rows.length === 0) {
@@ -49,17 +49,12 @@ module.exports = (pool) => {
 
   // insere nova revista 
   
-  router.post('/', async (req, res, next) => {
+  router.post('/', existsUser, async (req, res, next) => {
     const { nome_revista, descricao, email } = req.body;
     console.log(email, nome_revista)
   
     try {
-      const result = await pool.query(`SELECT * FROM usuario WHERE email = '${email}'`);
-      if (result.rows.length === 0) {
-        res.status(404).send('Usuário não encontrado');
-        return;
-      }
-  
+    
       const editorResult = await pool.query(
         'INSERT INTO editor (email, cargo) VALUES ($1, $2) RETURNING id_editor',
         [email, 'Editor']

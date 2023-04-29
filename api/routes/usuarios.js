@@ -29,7 +29,7 @@ module.exports = (pool) => {
     try {
       const result = await pool.query('SELECT * FROM usuario WHERE email = $1 and senha = $2', [email, senha]);
       if (result.rows.length === 0) {
-        res.status(404).send('Usuário não encontrado');
+        res.status(404).send('Usuario não encontrado');
       } else {
         res.json(result.rows[0]);
       }
