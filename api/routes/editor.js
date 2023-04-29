@@ -16,15 +16,26 @@ module.exports = (pool) => {
       res.status(500).send('Erro ao buscar editores');
     }
   });
-  // Rota para buscar um editor por email
+  // Rota para buscar todos os aritigos submetidos, tem que colocar restricao depois
   router.get('/:email', async (req, res) => {
     try {
-      const { email } = req.params;
-      const result = await pool.query('select usuario.nome_completo, revista.nome_revista, revista.descricao from usuario inner join editor using(email) join trabalha_editor using(id_editor) join revista using(id_revista) WHERE email = $1', [email]);
-      res.status(200).json(result.rows[0]);
+      const email = req.params.email;
+  
+      const query = `
+        SELECT artigo.*, revista.nome_revista
+        FROM artigo
+        JOIN revista ON artigo.id_revista = revista.id_revista
+        JOIN trabalha_editor ON revista.id_revista = trabalha_editor.id_revista
+        JOIN editor ON trabalha_editor.id_editor = editor.id_editor
+        JOIN usuario ON editor.email = usuario.email
+        WHERE usuario.email = $1
+      `;
+      const result = await pool.query(query, [email]);
+  
+      res.json(result.rows);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Erro ao buscar editor por email' });
+      res.status(500).json({ message: 'Erro ao buscar artigos' });
     }
   });
 
