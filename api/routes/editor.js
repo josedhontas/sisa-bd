@@ -78,6 +78,18 @@ module.exports = (pool) => {
     }
   });
 
+  router.get('/buscar/:email', async (req, res, next)=>{
+    const {email} = req.params;
+    try {
+      const result = await pool.query(`SELECT * FROM editor WHERE email = '${email}'` );
+      res.json(result.rows.length)
+    } catch(error){
+      res.status(500).json({message:'Erro ao buscar editor'})
+    }
+    
+
+  });
+
 
   return router;
 };
