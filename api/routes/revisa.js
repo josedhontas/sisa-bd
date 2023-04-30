@@ -71,6 +71,48 @@ module.exports = (pool) => {
           }
         });
       });
+
+
+
+      router.get('/:email', async (req, res) => {
+        try {
+          const { email } = req.params;
+          const result = await pool.query(
+            `SELECT artigo.nome_artigo, revista.nome_revista, artigo.link_artigo,
+            (SELECT nome_completo FROM usuario WHERE email = autor.email) AS nome_autor,
+            (SELECT nome_completo FROM usuario WHERE email = editor.email) AS nome_editor
+     FROM revisor
+     INNER JOIN revisa ON revisor.id_revisor = revisa.id_revisor
+     INNER JOIN artigo ON revisa.id_artigo = artigo.id_artigo
+     INNER JOIN submete ON artigo.id_artigo = submete.id_artigo
+     INNER JOIN autor ON submete.id_autor = autor.id_autor
+     INNER JOIN revista ON artigo.id_revista = revista.id_revista
+     INNER JOIN trabalha_editor ON trabalha_editor.id_revista = revista.id_revista
+     INNER JOIN editor ON trabalha_editor.id_editor = editor.id_editor
+     WHERE revisor.email = $1 AND revisa.aceito IS NULL;
+     `,
+            [email]
+          );
+          res.status(200).json(result.rows);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: 'Erro ao buscar informações do revisor por email' });
+        }
+      });
+
+      router.put('/:id', async (req, res) => {
+        const { id } = req.params;
+        const { aceito } = req.body;
+      
+        try {
+          const result = await db.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2', [aceito, id]);
+          res.sendStatus(204);
+        } catch (err) {
+          console.error(err);
+          res.sendStatus(500);
+        }
+      });
+      
       
       
 
