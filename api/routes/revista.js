@@ -75,7 +75,7 @@ module.exports = (pool) => {
         res.status(404).send({resp:"404"});
         return;
       } else {
-        res.json({resp:"201"});
+        res.status(200).send({resp:"200"});
       }
 
     } catch (error) {
