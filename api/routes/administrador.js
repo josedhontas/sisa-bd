@@ -33,6 +33,11 @@ module.exports = (pool) => {
     }
   });
 
+  //Rota para verificar de Administrador é válido
+  router.get('/:email', async ()=>{
+
+  });
+
   // Rota para buscar um administrador por email
   router.get('/:email', async (req, res) => {
     try {
@@ -60,7 +65,7 @@ module.exports = (pool) => {
           // Adicionar usuário à tabela "autor"
           pool.query(
             'INSERT INTO administrador (email, cargo) VALUES ($1, $2)',
-            [email, 'Administrador_nao_validado'],
+            [email, 'Administrador Inválido'],
             (error, result) => {
               if (error) {
                 res.status(500).send(error.message);

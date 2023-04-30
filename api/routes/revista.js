@@ -21,6 +21,23 @@ module.exports = (pool) => {
     }
   }
   
+  const adminValidado = async (req, res , next) =>{
+    const {email, cargo} = req.body;
+    try {
+      const result = await pool.query('SELECT * from administrador where email = $1 and cargo = $2', [email, "Administrador"] );
+      if (result.rows.length === 0) {
+        res.status(404).send({resp:404});
+        return;
+      } else {
+        //res.json(result.rows[0]);
+        next();
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erro ao buscar usuário');
+    }
+  }
+  
 
   // Retorna todas as revistas cadastradas
   router.get('/', async (req, res) => {
@@ -49,7 +66,7 @@ module.exports = (pool) => {
 
   // insere nova revista 
   
-  router.post('/', existsUser, async (req, res, next) => {
+  router.post('/', adminValidado, async (req, res, next) => {
     const { nome_revista, descricao, email } = req.body;
     console.log(email, nome_revista)
   
@@ -72,11 +89,10 @@ module.exports = (pool) => {
         [editorId, revistaId]
       );
   
-      res.status(201).json(revistaResult.rows[0]);
-      next();
+      res.status(201).json({resp:201});
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Erro ao adicionar revista' });
+      res.status(500).json({ resp:500 });
     }
   });
   
