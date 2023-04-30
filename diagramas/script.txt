@@ -68,13 +68,16 @@ CREATE TABLE artigo (
   resumo TEXT
 );
 
-CREATE TABLE avaliacao (
-  id_avaliacao SERIAL PRIMARY KEY,
-  id_revisor INT REFERENCES revisor(id_revisor) ON DELETE CASCADE,
+CREATE TABLE revisa (
+  id_revisa SERIAL PRIMARY KEY,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
+  id_revisor INT REFERENCES revisor(id_revisor) ON DELETE CASCADE,
+  msg_revisor TEXT,
   avaliacao VARCHAR,
-  comentario TEXT
+  comentario TEXT,
+  aceito BOOLEAN
 );
+
 
 CREATE TABLE parecer (
   id_parecer SERIAL PRIMARY KEY,
