@@ -17,6 +17,8 @@ const parecerRoutes = require('./routes/parecer')(pool);
 const trabalhaAdministradorRoutes = require('./routes/trabalhaAdministrador')(pool);
 const trabalhaEditorRoutes = require('./routes/trabalhaEditor')(pool);
 const submeteRoutes = require('./routes/submete')(pool);
+const revisaRoutes = require('./routes/revisa')(pool);
+
 
 
 
@@ -38,6 +40,7 @@ app.use('/trabalhaAdministrador', trabalhaAdministradorRoutes);
 app.use('/trabalhaEditor', trabalhaEditorRoutes);
 app.use('/trabalhaEditor', trabalhaEditorRoutes);
 app.use('/submete', submeteRoutes);
+app.use('/revisa', revisaRoutes);
 
 
 app.listen(porta, () => {

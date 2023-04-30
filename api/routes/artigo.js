@@ -83,7 +83,7 @@ module.exports = (pool) => {
   });
   
 
-  router.put('/:id', (req, res) => {
+  /*router.put('/:id', (req, res) => {
     const id = req.params.id;
     const { email_revisor, msg_revisor } = req.body;
   
@@ -108,7 +108,7 @@ module.exports = (pool) => {
         });
       }
     });
-  });
+  });*/
   
 
   router.delete('/:id', async (req, res) => {
