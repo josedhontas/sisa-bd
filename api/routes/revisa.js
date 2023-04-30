@@ -123,6 +123,22 @@ module.exports = (pool) => {
         res.status(500).json({ message: 'Erro ao deletar' });
       }
     });
+
+
+    router.put('/:id_revisa', async (req, res) => {
+      const id_revisa = req.params.id_revisa;
+      const { avaliacao, comentario } = req.body;
+      try {
+        const result = await pool.query(
+          'UPDATE revisa SET avaliacao = $1, comentario = $2 WHERE id_revisa = $3',
+          [avaliacao, comentario, id_revisa]
+        );
+        res.status(200).json(result.rows);
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Erro ao atualizar informações de revisão');
+      }
+    });
     
       
       
