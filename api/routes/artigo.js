@@ -135,7 +135,7 @@ module.exports = (pool) => {
       JOIN trabalha_editor AS te ON te.id_revista = a.id_revista
       JOIN editor AS e ON e.id_editor = te.id_editor
       JOIN revista AS r ON r.id_revista = a.id_revista
-      WHERE email = $1
+      WHERE au.email = $1
 	    ORDER BY s.data_submissao;
       `;
       const result = await pool.query(query, [email]);
