@@ -60,10 +60,9 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao buscar artigo' });
     }
   });
-  
 
 
-  
+
   router.post('/', upload.single('pdf'), (req, res) => {
     const pdf = req.file;
     const link = pdf.location; // pega o link do pdf no s3
@@ -119,6 +118,32 @@ module.exports = (pool) => {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Erro ao deletar artigo' });
+    }
+  });
+
+  //Rota que retorna, dado um email, o link para os pdfs de cada submissão ordenados por data
+  router.get('/links/:email', async (req, res) => {
+    try {
+      const email = req.params.email;
+  
+      const query = `
+      SELECT a.link_artigo, s.data_submissao
+      FROM artigo AS a
+      JOIN submete AS s ON s.id_artigo = a.id_artigo
+      JOIN autor AS au ON au.id_autor = s.id_autor
+      JOIN usuario AS u ON u.email = au.email
+      JOIN trabalha_editor AS te ON te.id_revista = a.id_revista
+      JOIN editor AS e ON e.id_editor = te.id_editor
+      JOIN revista AS r ON r.id_revista = a.id_revista
+      WHERE email = $1
+	    ORDER BY s.data_submissao;
+      `;
+      const result = await pool.query(query, [email]);
+  
+      res.json(result.rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao buscar artigos' });
     }
   });
   
