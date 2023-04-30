@@ -115,7 +115,7 @@ module.exports = (pool) => {
 
     router.delete('/:id', async (req, res) => {
       try {
-        const { id } = req.id;
+        const { id } = req.params;
         await pool.query('DELETE FROM revisa WHERE id_revisa = $1', [id]);
         res.status(204).send();
       } catch (error) {
