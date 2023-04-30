@@ -88,21 +88,28 @@ module.exports = (pool) => {
   router.put('/:email', authenticate, (req, res) => {
     const { nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
     const { email } = req.params;
-
-
+  
     pool.query('UPDATE usuario SET nome_completo = $1, senha = $2, telefone = $3, departamento = $4, universidade = $5, descricao = $6, link_imagem = $7 WHERE email = $8',
       [nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem, email],
-      (error, result) => {
+      async (error, result) => {
         if (error) {
           res.status(500).send(error.message);
         } else if (result.rowCount === 0) {
           res.status(404).send('Usuário não encontrado');
         } else {
+          // Insere o email na tabela autor
+          try {
+            const queryAutor = await pool.query("INSERT INTO autor (email, cargo) VALUES ($1, 'Autor') RETURNING *", [email]);
+            console.log(`Email ${email} inserido na tabela autor com sucesso!`);
+          } catch (err) {
+            console.error(err);
+          }
           res.status(200).send('Usuário atualizado com sucesso!');
         }
       }
     );
   });
+  
 
   router.delete('/:email', authenticate, (req, res) => {
     const { email } = req.params;
