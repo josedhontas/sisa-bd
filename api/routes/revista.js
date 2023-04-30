@@ -64,9 +64,29 @@ module.exports = (pool) => {
     });
   });
 
+  //verifica se adminstrador é válido
+  router.get('/valida/:email', async (req, res, next)=>{
+    const {email} = req.params;
+    console.log(email)
+    try {
+      const result = await pool.query('SELECT * from administrador where email = $1 and cargo = $2', [email, "Administrador"] );
+      console.log(result.rows)
+      if (result.rows.length === 0) {
+        res.status(404).send({resp:"404"});
+        return;
+      } else {
+        res.json({resp:"201"});
+      }
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erro ao buscar usuário');
+    }
+  });
+
   // insere nova revista 
   
-  router.post('/', adminValidado, async (req, res, next) => {
+  router.post('/', existsUser, async (req, res, next) => {
     const { nome_revista, descricao, email } = req.body;
     console.log(email, nome_revista)
   
