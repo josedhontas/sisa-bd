@@ -78,7 +78,7 @@ module.exports = (pool) => {
         try {
           const { email } = req.params;
           const result = await pool.query(
-            `SELECT artigo.nome_artigo, revista.nome_revista, artigo.link_artigo,
+            `SELECT artigo.nome_artigo, revisa.id_revisa, revista.nome_revista, artigo.link_artigo,
             (SELECT nome_completo FROM usuario WHERE email = autor.email) AS nome_autor,
             (SELECT nome_completo FROM usuario WHERE email = editor.email) AS nome_editor
      FROM revisor
