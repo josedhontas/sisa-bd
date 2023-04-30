@@ -112,6 +112,17 @@ module.exports = (pool) => {
             res.status(500).json({ error: err.message });
         }
     });
+
+    router.delete('/:id', async (req, res) => {
+      try {
+        const { id } = req.id;
+        await pool.query('DELETE FROM revisa WHERE id_revisa = $1', [id]);
+        res.status(204).send();
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao deletar' });
+      }
+    });
     
       
       
