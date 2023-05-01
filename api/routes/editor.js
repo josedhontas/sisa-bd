@@ -53,6 +53,19 @@ module.exports = (pool) => {
     }
   });
 
+  router.get ('/retornaId_editor/:email', async (req, res) => {
+   try {
+    const {email} = req.params
+    console.log(email)
+    const result = await pool.query('select id_editor from editor join usuario using(email) where email = $1', [email]);
+    res.status(200).json(result.rows[0]);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao buscar id_editor pela email' });
+    }
+  });
+
+
   // Rota para atualizar um editor existente
   router.put('/:email', async (req, res) => {
     try {
