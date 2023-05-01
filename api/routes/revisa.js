@@ -175,7 +175,7 @@ module.exports = (pool) => {
             [id_artigo]
         );
 
-        if (revisaExists.rows.length > 0) { // Se já existe uma revisão, atualizar o revisor
+        if (revisaExists.rows.length > 1) { // Se já existe dois revisores, atualizar o ultimo revisor existente
             const updateRevisa = await pool.query(
                 'UPDATE revisa SET id_revisor = $1, aceito = false WHERE id_artigo = $2',
                 [id_revisor, id_artigo]
