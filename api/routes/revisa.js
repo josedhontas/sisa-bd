@@ -129,20 +129,53 @@ module.exports = (pool) => {
       res.status(500).send('Erro ao atualizar informações de revisão');
     }
   });
-  
+
 
   router.put('/aceito/:id', async (req, res) => {
     const { id } = req.params;
     const { aceito } = req.body;
 
     try {
-        const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2', [aceito, id]);
-        res.sendStatus(204);
+      const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2', [aceito, id]);
+      res.sendStatus(204);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
+      console.error(err);
+      res.status(500).json({ error: err.message });
     }
-});
+  });
+
+  router.put('/revisor/:email/', async (req, res) => {
+    const { email} = req.params;
+    const { id_artigo } = req.body;
+    
+    try {
+      const revisaExists = await pool.query(
+        'SELECT * FROM revisa WHERE id_artigo = $1',
+        [id_artigo]
+      );
+
+      if (revisaExists.rows.length > 0) {
+        const updateRevisa = await pool.query(
+          'UPDATE revisa SET id_revisor = (SELECT id_revisor FROM revisor WHERE email = $1) WHERE id_artigo = $2',
+          [email, id_artigo]
+        );
+
+        res.send(`Revisa atualizada com sucesso para o artigo de id ${id_artigo}`);
+      } else {
+        const newRevisa = await pool.query(
+          'INSERT INTO revisa (id_artigo, id_revisor) VALUES ($1, (SELECT id_revisor FROM revisor WHERE email = $2))',
+          [id_artigo, email]
+        );
+
+        res.send(`Nova revisa criada com sucesso para o artigo de id ${id_artigo}`);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erro interno no servidor');
+    }
+  });
+
+
 
 
 
