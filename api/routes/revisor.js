@@ -63,6 +63,17 @@ module.exports = (pool) => {
     }
   });
 
+  //essa rota recebe como parâmetro o email um editor e retorna todos os possíveis revisores
+  //para um artigo
+  router.get('/revisoresPossiveis/:email', async (req, res)=>{
+    const {email} = req.params;
+    try {
+      const result = await  pool.query(`SELECT * FROM usuario WHERE email not in (SELECT email FROM administrador) and email != $1`, [email]);
+      res.status(200).json(result.rows);
+    } catch(error){
+      res.status(500).json({message: 'erro ao buscar revisores'})
+    }
+  })
 
   return router;
 };
