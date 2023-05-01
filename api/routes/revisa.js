@@ -176,14 +176,14 @@ module.exports = (pool) => {
 
         if (revisaExists.rows.length > 0) { // Se já existe uma revisão, atualizar o revisor
             const updateRevisa = await pool.query(
-                'UPDATE revisa SET id_revisor = $1 WHERE id_artigo = $2',
+                'UPDATE revisa SET id_revisor = $1, aceito = false WHERE id_artigo = $2',
                 [id_revisor, id_artigo]
             );
 
             res.send(`Revisa atualizada com sucesso para o artigo de id ${id_artigo}`);
         } else { // Se não existe uma revisão, criar uma nova revisão
             const newRevisa = await pool.query(
-                'INSERT INTO revisa (id_artigo, id_revisor) VALUES ($1, $2)',
+                'INSERT INTO revisa (id_artigo, id_revisor, aceito) VALUES ($1, $2, false)',
                 [id_artigo, id_revisor]
             );
 
