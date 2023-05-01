@@ -108,7 +108,7 @@ module.exports = (pool) => {
   
       // Consulta SQL para obter os revisores associados ao artigo
       const consulta = `
-        SELECT usuario.nome_completo, usuario.email
+        SELECT usuario.nome_completo, usuario.email, revisa.id_revisa
         FROM usuario
         INNER JOIN revisor ON usuario.email = revisor.email
         INNER JOIN revisa ON revisor.id_revisor = revisa.id_revisor
