@@ -115,13 +115,13 @@ module.exports = (pool) => {
   });
 
 
-  router.put('/:id_revisa', async (req, res) => {
-    const id_revisa = req.params.id_revisa;
+  router.put('/:id', async (req, res) => {
+    const id = req.params.id; // aqui estamos acessando o valor do parâmetro 'id'
     const { avaliacao, comentario } = req.body;
     try {
       const result = await pool.query(
         'UPDATE revisa SET avaliacao = $1, comentario = $2 WHERE id_revisa = $3',
-        [avaliacao, comentario, id_revisa]
+        [avaliacao, comentario, id]
       );
       res.status(200).json(result.rows);
     } catch (err) {
@@ -129,6 +129,7 @@ module.exports = (pool) => {
       res.status(500).send('Erro ao atualizar informações de revisão');
     }
   });
+  
 
   router.put('/aceito/:id', async (req, res) => {
     const { id } = req.params;
