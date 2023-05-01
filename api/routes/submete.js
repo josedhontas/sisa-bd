@@ -31,7 +31,7 @@ module.exports = (pool) => {
       
           // Busca as submissões do autor
           const querySubmissoes = await pool.query(`
-            SELECT r.nome_revista, a.nome_artigo
+            SELECT r.nome_revista, a.nome_artigo, a.id_artigo
             FROM submete s
             JOIN artigo a ON s.id_artigo = a.id_artigo
             JOIN revista r ON a.id_revista = r.id_revista

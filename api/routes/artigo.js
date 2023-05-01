@@ -61,20 +61,30 @@ module.exports = (pool) => {
     }
   });
 
-  router.get('/historico/:id_artigo', async (req, res)=>{
-    
-    try{
-      const {id_artigo} = req.params;
-      console.log(id_artigo)
-      
-      const submissao = await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1',[id_artigo]);
-      const revisao = await pool.query('SELECT * FROM ')
-      res.send(submissao.rows);
-    } catch(error){
-      console.error(error);
-      res.status(500).json({ message: 'Erro ao buscar submissão' });
+  router.get('/historico/:id', async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const query = `
+        SELECT artigo.*, submete.id_autor, parecer.*, revisa.*
+        FROM artigo
+        JOIN submete ON artigo.id_artigo = submete.id_artigo
+        LEFT JOIN parecer ON artigo.id_artigo = parecer.id_artigo
+        LEFT JOIN revisa ON artigo.id_artigo = revisa.id_artigo
+        WHERE artigo.id_artigo = $1;
+      `;
+      const { rows } = await pool.query(query, [id]);
+  
+      if (rows.length === 0) {
+        return res.status(404).send('Artigo não encontrado.');
+      }
+  
+      return res.json(rows[0]);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send('Erro ao buscar o artigo.');
     }
-  })
+  });
   
   
 
