@@ -117,7 +117,6 @@ module.exports = (pool) => {
 
   router.get('/historico/:id', async (req, res) => {
     const { id } = req.params;
-  
     try {
       const query = `
         SELECT artigo.*, submete.id_autor, parecer.*, revisa.*
@@ -140,9 +139,6 @@ module.exports = (pool) => {
     }
   });
   
-  
-
-
 
 
   router.post('/', upload.single('pdf'), (req, res) => {

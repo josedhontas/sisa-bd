@@ -102,6 +102,27 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao buscar informações do revisor por email' });
     }
   });
+  router.get('/r/revisores/:id_artigo', async (req, res) => {
+    try {
+      const idArtigo = parseInt(req.params.id_artigo);
+  
+      // Consulta SQL para obter os revisores associados ao artigo
+      const consulta = `
+        SELECT usuario.nome_completo, usuario.email, revisa.id_revisa
+        FROM usuario
+        INNER JOIN revisor ON usuario.email = revisor.email
+        INNER JOIN revisa ON revisor.id_revisor = revisa.id_revisor
+        WHERE revisa.id_artigo = $1
+      `;
+  
+      const resultado = await pool.query(consulta, [idArtigo]);
+  
+      res.json(resultado.rows);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Erro do servidor');
+    }
+  });
 
 
   router.delete('/:id', async (req, res) => {
@@ -175,7 +196,7 @@ module.exports = (pool) => {
             [id_artigo]
         );
 
-        if (revisaExists.rows.length > 0) { // Se já existe uma revisão, atualizar o revisor
+        if (revisaExists.rows.length > 1) { // Se já existe dois revisores, atualizar o ultimo revisor existente
             const updateRevisa = await pool.query(
                 'UPDATE revisa SET id_revisor = $1, aceito = false WHERE id_artigo = $2',
                 [id_revisor, id_artigo]
