@@ -69,7 +69,7 @@ module.exports = (pool) => {
     const {email} = req.params;
     try {
       const result = await  pool.query(`SELECT * FROM usuario WHERE email not in (SELECT email FROM administrador) and email != $1`, [email]);
-      res.status(200).json(result.rows);
+      res.json(result.rows);
     } catch(error){
       res.status(500).json({message: 'erro ao buscar revisores'})
     }
