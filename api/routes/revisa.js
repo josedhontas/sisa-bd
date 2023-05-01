@@ -130,6 +130,19 @@ module.exports = (pool) => {
     }
   });
 
+  router.put('/aceito/:id', async (req, res) => {
+    const { id } = req.params;
+    const { aceito } = req.body;
+
+    try {
+        const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2', [aceito, id]);
+        res.sendStatus(204);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 
 
