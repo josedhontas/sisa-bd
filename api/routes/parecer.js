@@ -7,8 +7,9 @@ module.exports = (pool) => {
   router.post('/', async (req, res)=>{
     try {
       const {id_editor, id_artigo, comentario, parecer} = req.body;
-      await pool.query('INSERT INTO parecer (id_editor, id_artigo, comentario, parecer) VALUES($1, $2, $3, $4) RETURNING *', [id_editor, id_artigo, comentario, parecer]);
-      res.status(200).json({massage: 'ok'});
+      console.log(id_editor, id_artigo, comentario, parecer);
+      const result = await pool.query("INSERT INTO parecer (id_editor, id_artigo, comentario, parecer) VALUES ($1, $2, $3, $4) RETURNING *", [id_editor, id_artigo, comentario, parecer]);
+      res.status(201).json(result.rows[0]);
     } catch(error){
       res.status(500).json({message:"erro ao cadastrar parecer"});
     }
@@ -25,22 +26,34 @@ module.exports = (pool) => {
     }
   });
 
-  router.get ('/:id_editor', async (req, res) => {
- try{
-  const {id_editor} = req.params;
-  const result =  await pool.query ('SELECT * FROM parecer WHERE id_editor = $1', [id_editor])
-  if (result.rows.length === 0) {
-    return res.status(404).json({ message: 'Parecer não encontrado' });
-  } else {
-    res.json(result.rows);
+//   router.get ('/:id_editor', async (req, res) => {
+//  try{
+//   const {id_editor} = req.params;
+//   const result =  await pool.query ('SELECT * FROM parecer WHERE id_editor = $1', [id_editor])
+//   if (result.rows.length === 0) {
+//     return res.status(404).json({ message: 'Parecer não encontrado' });
+//   } else {
+//     res.status(201).json(result.rows[0]);
+//   }
+    
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: 'Erro ao buscar artigo' });
+// }
+// })
+
+router.get('/:id_editor', async (req, res) => {
+  try {
+    const { id_editor } = req.params;
+    const result = await pool.query('select * from parecer  WHERE id_editor = $1', [id_editor]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao buscar parecer' });
   }
-  
-  
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Erro ao buscar artigo' });
-}
-})
+});
+
+
   return router;
 
 };
