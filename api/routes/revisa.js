@@ -77,7 +77,7 @@ module.exports = (pool) => {
     try {
       const { email, boleano } = req.params;
 
-      const condition = boleano === 'true' ? '= true' : 'IS NULL';
+      const condition = boleano === 'true' ? '= true' : 'IS false';
 
       const result = await pool.query(
         `SELECT artigo.nome_artigo, revisa.id_revisa, revista.nome_revista, artigo.link_artigo,
