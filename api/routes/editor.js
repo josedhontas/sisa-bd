@@ -22,7 +22,7 @@ module.exports = (pool) => {
       const email = req.params.email;
   
       const query = `
-      SELECT a.nome_artigo, a.palavras_chaves, a.resumo, a.link_artigo, u.nome_completo AS nome_autor, r.nome_revista
+      SELECT a.nome_artigo, a.id_artigo, a.palavras_chaves, a.resumo, a.link_artigo, u.nome_completo AS nome_autor, r.nome_revista
       FROM artigo AS a
       JOIN submete AS s ON s.id_artigo = a.id_artigo
       JOIN autor AS au ON au.id_autor = s.id_autor
