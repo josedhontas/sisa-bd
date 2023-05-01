@@ -61,6 +61,24 @@ module.exports = (pool) => {
     }
   });
 
+  router.get('/historico/:id_artigo', async (req, res)=>{
+    
+    try{
+      const {id_artigo} = req.params;
+      console.log(id_artigo)
+      
+      const submissao = await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1',[id_artigo]);
+      const revisao = await pool.query('SELECT * FROM ')
+      res.send(submissao.rows);
+    } catch(error){
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao buscar submissão' });
+    }
+  })
+  
+  
+
+
 
 
   router.post('/', upload.single('pdf'), (req, res) => {
@@ -146,6 +164,8 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao buscar artigos' });
     }
   });
+
+  
   
   
 
