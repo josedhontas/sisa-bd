@@ -102,6 +102,27 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao buscar informações do revisor por email' });
     }
   });
+  router.get('/r/revisores/:id_artigo', async (req, res) => {
+    try {
+      const idArtigo = parseInt(req.params.id_artigo);
+  
+      // Consulta SQL para obter os revisores associados ao artigo
+      const consulta = `
+        SELECT usuario.nome_completo, usuario.email
+        FROM usuario
+        INNER JOIN revisor ON usuario.email = revisor.email
+        INNER JOIN revisa ON revisor.id_revisor = revisa.id_revisor
+        WHERE revisa.id_artigo = $1
+      `;
+  
+      const resultado = await pool.query(consulta, [idArtigo]);
+  
+      res.json(resultado.rows);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Erro do servidor');
+    }
+  });
 
 
   router.delete('/:id', async (req, res) => {
