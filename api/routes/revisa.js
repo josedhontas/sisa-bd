@@ -77,7 +77,8 @@ module.exports = (pool) => {
     try {
       const { email, boleano } = req.params;
 
-      const condition = boleano === 'true' ? '= true' : 'IS NULL';
+      const condition = boleano === 'true' ? '= true' : '= false';
+
 
       const result = await pool.query(
         `SELECT artigo.nome_artigo, revisa.id_revisa, revista.nome_revista, artigo.link_artigo,
@@ -129,23 +130,71 @@ module.exports = (pool) => {
       res.status(500).send('Erro ao atualizar informações de revisão');
     }
   });
-  
+
 
   router.put('/aceito/:id', async (req, res) => {
     const { id } = req.params;
     const { aceito } = req.body;
 
     try {
-        const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2', [aceito, id]);
-        res.sendStatus(204);
+      const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2', [aceito, id]);
+      res.sendStatus(204);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.put('/revisor/:email/', async (req, res) => {
+    const { email} = req.params;
+    const { id_artigo } = req.body;
+    
+    try {
+        // Verificar se o revisor existe
+        const revisorExists = await pool.query(
+            'SELECT id_revisor FROM revisor WHERE email = $1',
+            [email]
+        );
+
+        let id_revisor;
+
+        // Se o revisor já existir, obter seu id
+        if (revisorExists.rows.length > 0) {
+            id_revisor = revisorExists.rows[0].id_revisor;
+        } else { // Se o revisor não existir, criar um novo revisor
+            const newRevisor = await pool.query(
+                'INSERT INTO revisor (email) VALUES ($1) ON CONFLICT DO NOTHING RETURNING id_revisor',
+                [email]
+            );
+            id_revisor = newRevisor.rows[0].id_revisor;
+        }
+
+        // Verificar se já existe uma revisão para o artigo
+        const revisaExists = await pool.query(
+            'SELECT * FROM revisa WHERE id_artigo = $1',
+            [id_artigo]
+        );
+
+        if (revisaExists.rows.length > 0) { // Se já existe uma revisão, atualizar o revisor
+            const updateRevisa = await pool.query(
+                'UPDATE revisa SET id_revisor = $1, aceito = false WHERE id_artigo = $2',
+                [id_revisor, id_artigo]
+            );
+
+            res.send(`Revisa atualizada com sucesso para o artigo de id ${id_artigo}`);
+        } else { // Se não existe uma revisão, criar uma nova revisão
+            const newRevisa = await pool.query(
+                'INSERT INTO revisa (id_artigo, id_revisor, aceito) VALUES ($1, $2, false)',
+                [id_artigo, id_revisor]
+            );
+
+            res.send(`Nova revisa criada com sucesso para o artigo de id ${id_artigo}`);
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro interno no servidor');
     }
 });
-
-
-
 
 
   return router;
