@@ -72,19 +72,13 @@ module.exports = (pool) => {
       const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisa where id_artigo = $1 and (aceito = true and avaliacao is not null)' , [id_artigo])
       const parecer = await pool.query ('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1' , [id_artigo])
     
-      
-      // let submissoes = submissao.rows.map(acont=>{
-      //   acont.acontecimento = 'O artigo Foi Submetido'
-      //   acont.parecer = ''
-      //   acont.comentario = ''
-      // })
-
+  
       let submissoes = submissao.rows;
       let revisoes = revisao.rows;
       let pareceres = parecer.rows
 
       for (let acont of submissoes){
-        acont.acontecimento = 'O Artigo Foi Submetido';
+        acont.acontecimento = 'The article was submitted';
         acont.data = acont.data_submissao;
         acont.parecer = '';
         acont.comentario = '';
@@ -92,7 +86,7 @@ module.exports = (pool) => {
       }
 
       for (let acont of revisoes){
-        acont.acontecimento = "O Artigo Foi Revisado"
+        acont.acontecimento = "Article has been revised"
         acont.parecer = acont.avaliacao;
         delete acont.avaliacao;
         acont.data = acont.data_revisa;
@@ -100,7 +94,7 @@ module.exports = (pool) => {
       }
 
       for (let acont of pareceres){
-        acont.acontecimento = "O Editor Emitiu Um Parecer"
+        acont.acontecimento = "The Editor Has Issued an Opinion"
         acont.data = acont.data_parecer;
         delete acont.data_parecer;
       }
