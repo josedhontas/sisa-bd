@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
-
+//rota que insere o id_autor e id_artigo na tabela submete
     router.post('/', async (req, res) => {
         try {
           const { email, id_artigo } = req.body;
@@ -21,6 +21,7 @@ module.exports = (pool) => {
         }
       });
 
+      // rota que retorna as submissões do autor pegando o seu id a partir do email
       router.get('/:email', async (req, res) => {
         try {
           const { email } = req.params;

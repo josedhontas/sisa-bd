@@ -4,6 +4,7 @@ const router = express.Router();
 module.exports = (pool) => {
 
   //Middlewares
+  //middleware que verifica se, dado um email, ele existe na tebala usuario
   const existsUser = async (req, res, next)=>{
     const { email } = req.body;
     try {
@@ -21,6 +22,8 @@ module.exports = (pool) => {
     }
   }
   
+  //Midlleware que verifica se o administrador já está validado pelo gestor
+  // e consequentemente, se ele já pode cadastrar a revista dele
   const adminValidado = async (req, res , next) =>{
     const {email, cargo} = req.body;
     try {
@@ -116,6 +119,7 @@ module.exports = (pool) => {
     }
   });
   
+  // rota que atualiza os dados da revista a partir do id
   router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { nome_revista, descricao } = req.body;
@@ -137,6 +141,7 @@ module.exports = (pool) => {
     }
   });
 
+  //rota que deleta uma revista
   router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;

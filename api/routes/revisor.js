@@ -14,7 +14,7 @@ module.exports = (pool) => {
       res.status(500).send('Erro ao buscar revisores');
     }
   });
-  
+  //rota que retorna o revisor a partir do email
   router.get('/:email', async (req, res) => {
     try {
       const { email } = req.params;

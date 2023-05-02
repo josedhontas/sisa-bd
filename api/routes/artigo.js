@@ -4,6 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 
+// credenciais do bucket do aws
 const s3 = new AWS.S3({
   accessKeyId: 'AKIAUBXBIDPATQNYLL4X',
   secretAccessKey: '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',
@@ -11,6 +12,8 @@ const s3 = new AWS.S3({
   
 });
 
+
+// envio do pdf para o multer
 const upload = multer({
   storage: multerS3({
       s3: s3,
@@ -27,7 +30,7 @@ const upload = multer({
 
 module.exports = (pool) => {
 
-  // Rota para buscar todos os artigoes
+  // Rota para buscar todos os artigos
   router.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM artigo');
@@ -37,8 +40,8 @@ module.exports = (pool) => {
       res.status(500).send('Erro ao buscar artigos');
     }
   });
-
-
+  
+ // rota que dado um id retorna as informacoes para este artigo em especifico
   router.get('/:id', async (req, res) => {
     try {
       const { id } = req.params;
@@ -61,22 +64,24 @@ module.exports = (pool) => {
     }
   });
 
-
+  //Essa rota recebe o id de um artigo e devolve todos os acontecimentos relacionaos ao mesmo
   router.get('/h/historico/:id_artigo', async (req, res)=>{
     
     try{
       const {id_artigo} = req.params;
       console.log("ID_ARTIGO: "+id_artigo)
-      
+      //select de, respectivamente todas as submissões, avaliações e pareceres emitidos
       const submissao =   await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1',[id_artigo]);
       const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisa where id_artigo = $1 and (aceito = true and avaliacao is not null)' , [id_artigo])
       const parecer = await pool.query ('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1' , [id_artigo])
     
-  
+      //pega todas as linhas resultantes da consulta
       let submissoes = submissao.rows;
       let revisoes = revisao.rows;
       let pareceres = parecer.rows
 
+      //padroniza todos os arrays de objetos, de modo que contenham as as mesas chaves
+      //adiciona elemento que indica qual acontecimento ocorreu
       for (let acont of submissoes){
         acont.acontecimento = 'The article was submitted';
         acont.data = acont.data_submissao;
@@ -99,8 +104,11 @@ module.exports = (pool) => {
         delete acont.data_parecer;
       }
 
+      //aloca todos os acontecimentos em um único array
       let acontecimentos = [...submissoes,...revisoes,...pareceres]
+      //ordena acontecimentos em ordem cronológica
       acontecimentos = acontecimentos.sort((a, b) => new Date(a.data) - new Date(b.data))
+      
       res.status(200).json(acontecimentos)
       console.log(acontecimentos);
 
@@ -109,6 +117,8 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao buscar submissão' });
     }
   })
+  
+  // rota que dado um artigo retorna o seu historico de submissao
 
   router.get('/historico/:id', async (req, res) => {
     const { id } = req.params;
@@ -134,8 +144,7 @@ module.exports = (pool) => {
     }
   });
   
-
-
+  // Rota que insere o artigo no bd
   router.post('/', upload.single('pdf'), (req, res) => {
     const pdf = req.file;
     const link = pdf.location; // pega o link do pdf no s3

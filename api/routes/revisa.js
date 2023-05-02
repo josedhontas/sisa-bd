@@ -72,7 +72,7 @@ module.exports = (pool) => {
     });
   });
 
-
+  // rota que retorna todos os convites de revisao para um revisor, ela é utsada para saber os convites pendentes e os outros
   router.get('/:email/:boleano', async (req, res) => {
     try {
       const { email, boleano } = req.params;
@@ -102,12 +102,12 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao buscar informações do revisor por email' });
     }
   });
+
+      // Consulta SQL para obter os revisores associados ao artigo
   router.get('/r/revisores/:id_artigo', async (req, res) => {
     try {
       const idArtigo = parseInt(req.params.id_artigo);
-  
-      // Consulta SQL para obter os revisores associados ao artigo
-      const consulta = `
+        const consulta = `
         SELECT usuario.nome_completo, usuario.email, revisa.id_revisa
         FROM usuario
         INNER JOIN revisor ON usuario.email = revisor.email
@@ -124,7 +124,7 @@ module.exports = (pool) => {
     }
   });
 
-
+  // rota para excluir convite do revisor
   router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
@@ -135,7 +135,7 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao deletar' });
     }
   });
-
+ // rota para inserir uma avaliacao para o artigo
 
   router.put('/:id', async (req, res) => {
     const id = req.params.id; // aqui estamos acessando o valor do parâmetro 'id'
@@ -152,7 +152,7 @@ module.exports = (pool) => {
     }
   });
 
-
+// rota para alertar que o convite foi aceito pelo revisor
   router.put('/aceito/:id', async (req, res) => {
     const { id } = req.params;
     const { aceito } = req.body;
@@ -165,6 +165,8 @@ module.exports = (pool) => {
       res.status(500).json({ error: err.message });
     }
   });
+
+  // rota para enviar convite de revisao para alguem
 
   router.put('/revisor/:email/', async (req, res) => {
     const { email} = req.params;

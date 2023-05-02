@@ -84,7 +84,7 @@ module.exports = (pool) => {
     );
   });
   
-
+//rota que atualiza as informações de um usuário a partir do seu email
   router.put('/:email', authenticate, (req, res) => {
     const { nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
     const { email } = req.params;
@@ -110,7 +110,7 @@ module.exports = (pool) => {
     );
   });
   
-
+// rota que deleta um usuário recebendo o seu email
   router.delete('/:email', authenticate, (req, res) => {
     const { email } = req.params;
     pool.query('DELETE FROM usuario WHERE email = $1', [email], (error, result) => {

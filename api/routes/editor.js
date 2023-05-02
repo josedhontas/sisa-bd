@@ -52,7 +52,7 @@ module.exports = (pool) => {
       res.status(500).json({ message: 'Erro ao criar novo editor' });
     }
   });
-
+// rota que devolve o Id_editor a partir do email
   router.get ('/retornaId_editor/:email', async (req, res) => {
    try {
     const {email} = req.params
@@ -91,6 +91,7 @@ module.exports = (pool) => {
     }
   });
 
+  // rota que retorna o editor a partir do email
   router.get('/buscar/:email', async (req, res, next)=>{
     const {email} = req.params;
     try {

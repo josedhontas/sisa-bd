@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+//rota que devolve as informações do gestor
 module.exports = (pool) => {
   router.get('/', async (req, res) => {
     try {
@@ -11,6 +12,7 @@ module.exports = (pool) => {
     }
   });
 
+  //rota que devolve as informações do gestor a partir do email
   router.get('/:email', async (req, res) => {
     const email = req.params.email;
     try {
@@ -21,6 +23,7 @@ module.exports = (pool) => {
     }
   });
 
+  //rota que insere o id_papel na tabela gestor
   router.post('/', async (req, res) => {
     const {id_papel } = req.body;
   
@@ -32,6 +35,7 @@ module.exports = (pool) => {
     }
   });
 
+  //rota que atualiza a tabela gestor
   router.put('/:id', async (req, res) => {
     const { id_gestor } = req.params;
     const { id_papel} = req.body;
@@ -44,6 +48,7 @@ module.exports = (pool) => {
     }
   });
 
+  //rota que deleta um gestor a partir do id_gestor
   router.delete('/:id', async (req, res) => {
     const { id_gestor } = req.params;
   
