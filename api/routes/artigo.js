@@ -68,7 +68,7 @@ module.exports = (pool) => {
       const {id_artigo} = req.params;
       console.log("ID_ARTIGO: "+id_artigo)
       
-      const submissao = await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1',[id_artigo]);
+      const submissao =   await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1',[id_artigo]);
       const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisa where id_artigo = $1 and (aceito = true and avaliacao is not null)' , [id_artigo])
       const parecer = await pool.query ('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1' , [id_artigo])
     
@@ -84,7 +84,7 @@ module.exports = (pool) => {
       let pareceres = parecer.rows
 
       for (let acont of submissoes){
-        acont.acontecimento = 'O Artigo Foi Submetido'
+        acont.acontecimento = 'O Artigo Foi Submetido';
         acont.data = acont.data_submissao;
         acont.parecer = '';
         acont.comentario = '';
@@ -105,7 +105,7 @@ module.exports = (pool) => {
         delete acont.data_parecer;
       }
 
-      let acontecimentos = [...submissoes,...pareceres,...pareceres]
+      let acontecimentos = [...submissoes,...revisoes,...pareceres]
       res.status(200).json(acontecimentos)
       console.log(acontecimentos);
 
