@@ -106,7 +106,7 @@ module.exports = (pool) => {
       }
 
       let acontecimentos = [...submissoes,...revisoes,...pareceres]
-      acontecimentos.sort((a, b) => new Date(a.data) - new Date(b.data))
+      acontecimentos = acontecimentos.sort((a, b) => new Date(a.data) - new Date(b.data))
       res.status(200).json(acontecimentos)
       console.log(acontecimentos);
 
