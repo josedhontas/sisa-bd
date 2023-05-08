@@ -60,11 +60,9 @@ CREATE TABLE trabalha_administrador (
 CREATE TABLE artigo (
   id_artigo SERIAL PRIMARY KEY,
   id_revista INT REFERENCES revista(id_revista) ON DELETE SET NULL,
-  email_revisor VARCHAR,
   palavras_chaves TEXT,
   nome_artigo VARCHAR,
   link_artigo varchar,
-  msg_revisor TEXT,
   resumo TEXT
 );
 
