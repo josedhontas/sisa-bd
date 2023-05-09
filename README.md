@@ -8,7 +8,7 @@ Este é um projeto para a disciplina de Banco de Dados, desenvolvido por:
 
 ### Documentação da API
 
-A documentação swagger da API pode ser encontrada em: [sisa-doc]([https:google.com.br/](https://api.sisa.systems/api-docs/))
+A documentação swagger da API pode ser encontrada em: [sisa-doc](https://api.sisa.systems/api-docs/))
 
 ### Acessar API
 
