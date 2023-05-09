@@ -92,3 +92,8 @@ CREATE TABLE submete (
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
   data_submete DATE
 );
+
+create table revisor_artigo(
+  id_revisor int REFERENCES revisor(id_revisor) ON DELETE CASCADE,
+  id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE
+)
