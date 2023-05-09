@@ -176,7 +176,7 @@ module.exports = (pool) => {
  *
  * components:
  *   schemas:
- *     Acontecimento:
+ *     Artigo:
  *       type: object
  *       properties:
  *         acontecimento:
