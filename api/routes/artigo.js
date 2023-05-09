@@ -9,21 +9,21 @@ const s3 = new AWS.S3({
   accessKeyId: 'AKIAUBXBIDPATQNYLL4X',
   secretAccessKey: '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',
   region: 'us-east-2'
-  
+
 });
 
 
 // envio do pdf para o multer
 const upload = multer({
   storage: multerS3({
-      s3: s3,
-      bucket: 'sisa-bucket',
-      metadata: function (request, file, cb) {
-          cb(null, { fieldName: file.fieldname });
-      },
-      key: function (request, file, cb) {
-          cb(null, Date.now().toString() + '-' + file.originalname);
-      }
+    s3: s3,
+    bucket: 'sisa-bucket',
+    metadata: function (request, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (request, file, cb) {
+      cb(null, Date.now().toString() + '-' + file.originalname);
+    }
   })
 });
 
@@ -31,6 +31,35 @@ const upload = multer({
 module.exports = (pool) => {
 
   // Rota para buscar todos os artigos
+
+  /**
+ * @swagger
+ * /artigo:
+ *   get:
+ *     summary: Busca todos os artigos
+ *     tags:
+ *       - Artigo
+ *     responses:
+ *       200:
+ *         description: Lista de artigos encontrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Artigo'
+ *       500:
+ *         description: Erro ao buscar artigos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ */
+
   router.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM artigo');
@@ -40,22 +69,67 @@ module.exports = (pool) => {
       res.status(500).send('Erro ao buscar artigos');
     }
   });
-  
- // rota que dado um id retorna as informacoes para este artigo em especifico
+
+  // rota que dado um id retorna as informacoes para este artigo em especifico
+
+  /**
+  * @swagger
+  * /artigo/{id}:
+  *   get:
+  *     summary: Busca um artigo por ID
+  *     tags:
+  *       - Artigo
+  *     parameters:
+  *       - in: path
+  *         name: id
+  *         schema:
+  *           type: integer
+  *         required: true
+  *         description: ID do artigo
+  *     responses:
+  *       200:
+  *         description: Artigo encontrado com sucesso
+  *         content:
+  *           application/pdf:
+  *             schema:
+  *               type: string
+  *               format: binary
+  *       404:
+  *         description: Artigo não encontrado
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                   description: Mensagem de erro
+  *       500:
+  *         description: Erro ao buscar artigo
+  *         content:
+  *           application/json:
+  *             schema:
+  *               type: object
+  *               properties:
+  *                 message:
+  *                   type: string
+  *                   description: Mensagem de erro
+  */
+
   router.get('/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const result = await pool.query('SELECT artigo FROM artigo WHERE id_artigo = $1', [id]);
-  
+
       if (result.rows.length === 0) {
         return res.status(404).json({ message: 'Artigo não encontrado' });
       }
-  
+
       const artigo = result.rows[0];
-  
+
       // Define o tipo do conteúdo como pdf
       res.setHeader('Content-Type', 'application/pdf');
-  
+
       // Envia o conteúdo do artigo, que deve ser o arquivo PDF armazenado diretamente no banco de dados
       res.send(artigo.artigo);
     } catch (error) {
@@ -65,16 +139,71 @@ module.exports = (pool) => {
   });
 
   //Essa rota recebe o id de um artigo e devolve todos os acontecimentos relacionaos ao mesmo
-  router.get('/h/historico/:id_artigo', async (req, res)=>{
-    
-    try{
-      const {id_artigo} = req.params;
-      console.log("ID_ARTIGO: "+id_artigo)
+
+  /**
+ * @swagger
+ * /artigo/h/historico/{id_artigo}:
+ *   get:
+ *     summary: Busca o histórico de acontecimentos de um artigo por ID
+ *     tags:
+ *       - Artigo
+ *     parameters:
+ *       - in: path
+ *         name: id_artigo
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID do artigo
+ *     responses:
+ *       200:
+ *         description: Histórico de acontecimentos encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Acontecimento'
+ *       500:
+ *         description: Erro ao buscar histórico de acontecimentos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ *
+ * components:
+ *   schemas:
+ *     Acontecimento:
+ *       type: object
+ *       properties:
+ *         acontecimento:
+ *           type: string
+ *           description: Descrição do acontecimento
+ *         data:
+ *           type: string
+ *           format: date-time
+ *           description: Data do acontecimento
+ *         parecer:
+ *           type: string
+ *           description: Parecer relacionado ao acontecimento
+ *         comentario:
+ *           type: string
+ *           description: Comentário relacionado ao acontecimento
+ */
+
+  router.get('/h/historico/:id_artigo', async (req, res) => {
+
+    try {
+      const { id_artigo } = req.params;
+      console.log("ID_ARTIGO: " + id_artigo)
       //select de, respectivamente todas as submissões, avaliações e pareceres emitidos
-      const submissao =   await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1',[id_artigo]);
-      const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisa where id_artigo = $1 and (aceito = true and avaliacao is not null)' , [id_artigo])
-      const parecer = await pool.query ('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1' , [id_artigo])
-    
+      const submissao = await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1', [id_artigo]);
+      const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisa where id_artigo = $1 and (aceito = true and avaliacao is not null)', [id_artigo])
+      const parecer = await pool.query('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1', [id_artigo])
+
       //pega todas as linhas resultantes da consulta
       let submissoes = submissao.rows;
       let revisoes = revisao.rows;
@@ -82,7 +211,7 @@ module.exports = (pool) => {
 
       //padroniza todos os arrays de objetos, de modo que contenham as as mesas chaves
       //adiciona elemento que indica qual acontecimento ocorreu
-      for (let acont of submissoes){
+      for (let acont of submissoes) {
         acont.acontecimento = 'The article was submitted';
         acont.data = acont.data_submissao;
         acont.parecer = '';
@@ -90,7 +219,7 @@ module.exports = (pool) => {
         delete acont.data_submissao;
       }
 
-      for (let acont of revisoes){
+      for (let acont of revisoes) {
         acont.acontecimento = "Article has been revised"
         acont.parecer = acont.avaliacao;
         delete acont.avaliacao;
@@ -98,26 +227,26 @@ module.exports = (pool) => {
         delete acont.data_revisa;
       }
 
-      for (let acont of pareceres){
+      for (let acont of pareceres) {
         acont.acontecimento = "The Editor Has Issued an Opinion"
         acont.data = acont.data_parecer;
         delete acont.data_parecer;
       }
 
       //aloca todos os acontecimentos em um único array
-      let acontecimentos = [...submissoes,...revisoes,...pareceres]
+      let acontecimentos = [...submissoes, ...revisoes, ...pareceres]
       //ordena acontecimentos em ordem cronológica
       acontecimentos = acontecimentos.sort((a, b) => new Date(a.data) - new Date(b.data))
-      
+
       res.status(200).json(acontecimentos)
       console.log(acontecimentos);
 
-    } catch(error){
+    } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Erro ao buscar submissão' });
     }
   })
-  
+
   // rota que dado um artigo retorna o seu historico de submissao
 
   router.get('/historico/:id', async (req, res) => {
@@ -132,18 +261,18 @@ module.exports = (pool) => {
         WHERE artigo.id_artigo = $1;
       `;
       const { rows } = await pool.query(query, [id]);
-  
+
       if (rows.length === 0) {
         return res.status(404).send('Artigo não encontrado.');
       }
-  
+
       return res.json(rows[0]);
     } catch (err) {
       console.error(err);
       return res.status(500).send('Erro ao buscar o artigo.');
     }
   });
-  
+
   // Rota que insere o artigo no bd
   router.post('/', upload.single('pdf'), (req, res) => {
     const pdf = req.file;
@@ -158,11 +287,11 @@ module.exports = (pool) => {
         res.status(500).send('Erro interno do servidor');
       } else {
         const id_artigo = results.rows[0].id_artigo;
-        res.status(201).json({ id_artigo : id_artigo });
+        res.status(201).json({ id_artigo: id_artigo });
       }
     });
   });
-  
+
 
   /*router.put('/:id', (req, res) => {
     const id = req.params.id;
@@ -190,7 +319,7 @@ module.exports = (pool) => {
       }
     });
   });*/
-  
+
 
   router.delete('/:id', async (req, res) => {
     try {
@@ -207,7 +336,7 @@ module.exports = (pool) => {
   router.get('/links/:email', async (req, res) => {
     try {
       const email = req.params.email;
-  
+
       const query = `
       SELECT a.link_artigo, s.data_submissao
       FROM artigo AS a
@@ -221,7 +350,7 @@ module.exports = (pool) => {
 	    ORDER BY s.data_submissao;
       `;
       const result = await pool.query(query, [email]);
-  
+
       res.json(result.rows);
     } catch (error) {
       console.error(error);
@@ -229,9 +358,9 @@ module.exports = (pool) => {
     }
   });
 
-  
-  
-  
+
+
+
 
 
 
