@@ -37,9 +37,9 @@ app.use('/parecer', parecerRoutes);
 app.use('/revista', revistaRoutes);
 app.use('/trabalhaAdministrador', trabalhaAdministradorRoutes);
 app.use('/trabalhaEditor', trabalhaEditorRoutes);
-app.use('/trabalhaEditor', trabalhaEditorRoutes);
 app.use('/submete', submeteRoutes);
 app.use('/revisa', revisaRoutes);
+
 
 swagger(app);
 app.listen(porta, () => {
