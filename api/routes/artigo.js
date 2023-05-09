@@ -249,6 +249,92 @@ module.exports = (pool) => {
 
   // rota que dado um artigo retorna o seu historico de submissao
 
+  /**
+ * @swagger
+ * /artigo/historico/{id}:
+ *   get:
+ *     summary: Busca o histórico de um artigo por ID
+ *     tags:
+ *       - Artigo
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID do artigo
+ *     responses:
+ *       200:
+ *         description: Histórico de artigo encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Artigo'
+ *       404:
+ *         description: Artigo não encontrado
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Artigo não encontrado.
+ *       500:
+ *         description: Erro ao buscar o artigo
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Erro ao buscar o artigo.
+ *
+ * components:
+ *   schemas:
+ *     Artigo:
+ *       type: object
+ *       properties:
+ *         id_artigo:
+ *           type: integer
+ *           description: ID do artigo
+ *         titulo:
+ *           type: string
+ *           description: Título do artigo
+ *         submissao:
+ *           type: object
+ *           properties:
+ *             id_autor:
+ *               type: integer
+ *               description: ID do autor
+ *             data_submissao:
+ *               type: string
+ *               format: date-time
+ *               description: Data de submissão
+ *         parecer:
+ *           type: object
+ *           properties:
+ *             data_parecer:
+ *               type: string
+ *               format: date-time
+ *               description: Data do parecer
+ *             parecer:
+ *               type: string
+ *               description: Parecer
+ *             comentario:
+ *               type: string
+ *               description: Comentário
+ *         revisao:
+ *           type: object
+ *           properties:
+ *             data_revisa:
+ *               type: string
+ *               format: date-time
+ *               description: Data da revisão
+ *             avaliacao:
+ *               type: string
+ *               description: Avaliação
+ *             comentario:
+ *               type: string
+ *               description: Comentário da revisão
+ */
+
+
   router.get('/historico/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -274,6 +360,57 @@ module.exports = (pool) => {
   });
 
   // Rota que insere o artigo no bd
+
+  /**
+ * @swagger
+ * /artigo:
+ *   post:
+ *     summary: Insere um novo artigo no banco de dados
+ *     tags:
+ *       - Artigo
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               pdf:
+ *                 type: string
+ *                 format: binary
+ *                 description: Arquivo PDF do artigo
+ *               id_revista:
+ *                 type: integer
+ *                 description: ID da revista associada ao artigo
+ *               palavras_chaves:
+ *                 type: string
+ *                 description: Palavras-chave do artigo (separadas por vírgula)
+ *               nome_artigo:
+ *                 type: string
+ *                 description: Nome do artigo
+ *               resumo:
+ *                 type: string
+ *                 description: Resumo do artigo
+ *     responses:
+ *       201:
+ *         description: Artigo inserido com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_artigo:
+ *                   type: integer
+ *                   description: ID do artigo inserido
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Erro interno do servidor.
+ */
+
   router.post('/', upload.single('pdf'), (req, res) => {
     const pdf = req.file;
     const link = pdf.location; // pega o link do pdf no s3
@@ -321,6 +458,36 @@ module.exports = (pool) => {
   });*/
 
 
+  /**
+ * @swagger
+ * /artigo/{id}:
+ *   delete:
+ *     summary: Deleta um artigo por ID
+ *     tags:
+ *       - Artigo
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID do artigo
+ *     responses:
+ *       204:
+ *         description: Artigo excluído com sucesso
+ *       500:
+ *         description: Erro ao deletar artigo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ */
+
+
   router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
@@ -333,6 +500,52 @@ module.exports = (pool) => {
   });
 
   //Rota que retorna, dado um email, o link para os pdfs de cada submissão ordenados por data
+
+  /**
+ * @swagger
+ * /artigo/links/{email}:
+ *   get:
+ *     summary: Retorna os links para os PDFs de cada submissão ordenados por data, dado um email
+ *     tags:
+ *       - Artigo
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do autor
+ *     responses:
+ *       200:
+ *         description: Links para os PDFs das submissões encontrados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/SubmissaoLink'
+ *       500:
+ *         description: Erro ao buscar os links para os PDFs das submissões
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorMessage'
+ *
+ * components:
+ *   schemas:
+ *     Artigo:
+ *       type: object
+ *       properties:
+ *         link_artigo:
+ *           type: string
+ *           description: Link para o PDF da submissão
+ *         data_submissao:
+ *           type: string
+ *           format: date-time
+ *           description: Data de submissão da submissão
+
+ */
+
   router.get('/links/:email', async (req, res) => {
     try {
       const email = req.params.email;
