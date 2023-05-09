@@ -29,23 +29,6 @@ module.exports = (pool) => {
  *               type: string
  */
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Autor:
- *       type: object
- *       properties:
- *         email:
- *           type: string
- *           description: Email do autor
- *         cargo:
- *           type: string
- *           description: Cargo do autor
- *       example:
- *         email: autor1@example.com
- *         cargo: Autor
- */
 
   router.get('/', async (req, res) => {
     try {

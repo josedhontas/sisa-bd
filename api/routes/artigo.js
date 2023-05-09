@@ -174,24 +174,6 @@ module.exports = (pool) => {
  *                   type: string
  *                   description: Mensagem de erro
  *
- * components:
- *   schemas:
- *     Artigo:
- *       type: object
- *       properties:
- *         acontecimento:
- *           type: string
- *           description: Descrição do acontecimento
- *         data:
- *           type: string
- *           format: date-time
- *           description: Data do acontecimento
- *         parecer:
- *           type: string
- *           description: Parecer relacionado ao acontecimento
- *         comentario:
- *           type: string
- *           description: Comentário relacionado ao acontecimento
  */
 
   router.get('/h/historico/:id_artigo', async (req, res) => {
@@ -285,53 +267,6 @@ module.exports = (pool) => {
  *               type: string
  *               example: Erro ao buscar o artigo.
  *
- * components:
- *   schemas:
- *     Artigo:
- *       type: object
- *       properties:
- *         id_artigo:
- *           type: integer
- *           description: ID do artigo
- *         titulo:
- *           type: string
- *           description: Título do artigo
- *         submissao:
- *           type: object
- *           properties:
- *             id_autor:
- *               type: integer
- *               description: ID do autor
- *             data_submissao:
- *               type: string
- *               format: date-time
- *               description: Data de submissão
- *         parecer:
- *           type: object
- *           properties:
- *             data_parecer:
- *               type: string
- *               format: date-time
- *               description: Data do parecer
- *             parecer:
- *               type: string
- *               description: Parecer
- *             comentario:
- *               type: string
- *               description: Comentário
- *         revisao:
- *           type: object
- *           properties:
- *             data_revisa:
- *               type: string
- *               format: date-time
- *               description: Data da revisão
- *             avaliacao:
- *               type: string
- *               description: Avaliação
- *             comentario:
- *               type: string
- *               description: Comentário da revisão
  */
 
 
@@ -531,19 +466,6 @@ module.exports = (pool) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorMessage'
  *
- * components:
- *   schemas:
- *     Artigo:
- *       type: object
- *       properties:
- *         link_artigo:
- *           type: string
- *           description: Link para o PDF da submissão
- *         data_submissao:
- *           type: string
- *           format: date-time
- *           description: Data de submissão da submissão
-
  */
 
   router.get('/links/:email', async (req, res) => {
