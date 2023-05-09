@@ -158,12 +158,18 @@ module.exports = (pool) => {
     const { aceito } = req.body;
 
     try {
-      const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2', [aceito, id]);
+      const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2 RETURNING id_artigo, id_revisor', [aceito, id]);
+      const { id_artigo, id_revisor } = result.rows[0];
+    
+      // Insere os valores na tabela revisor_artigo
+      await pool.query('INSERT INTO revisor_artigo (id_revisor, id_artigo) VALUES ($1, $2)', [id_revisor, id_artigo]);
+    
       res.sendStatus(204);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err.message });
     }
+    
   });
 
   // rota para enviar convite de revisao para alguem
