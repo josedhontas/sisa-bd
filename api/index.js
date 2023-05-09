@@ -18,8 +18,7 @@ const trabalhaAdministradorRoutes = require('./routes/trabalhaAdministrador')(po
 const trabalhaEditorRoutes = require('./routes/trabalhaEditor')(pool);
 const submeteRoutes = require('./routes/submete')(pool);
 const revisaRoutes = require('./routes/revisa')(pool);
-
-
+const swagger = require('./swagger');
 
 
 app.use(bp.urlencoded({extended:true}));
@@ -42,7 +41,7 @@ app.use('/trabalhaEditor', trabalhaEditorRoutes);
 app.use('/submete', submeteRoutes);
 app.use('/revisa', revisaRoutes);
 
-
+swagger(app);
 app.listen(porta, () => {
   console.log('Servidor iniciado na porta '+ porta);
 });
