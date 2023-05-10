@@ -81,7 +81,7 @@ module.exports = (pool) => {
 
 
       const result = await pool.query(
-        `SELECT artigo.nome_artigo, revisao.id_revisa, revista.nome_revista, artigo.link_artigo,
+        `SELECT artigo.nome_artigo, revisao.id_revisao, revista.nome_revista, artigo.link_artigo,
             (SELECT nome_completo FROM usuario WHERE email = autor.email) AS nome_autor,
             (SELECT nome_completo FROM usuario WHERE email = editor.email) AS nome_editor
             FROM revisor
@@ -108,7 +108,7 @@ module.exports = (pool) => {
     try {
       const idArtigo = parseInt(req.params.id_artigo);
         const consulta = `
-        SELECT usuario.nome_completo, usuario.email, revisao.id_revisa
+        SELECT usuario.nome_completo, usuario.email, revisao.id_revisao
         FROM usuario
         INNER JOIN revisor ON usuario.email = revisor.email
         INNER JOIN revisao ON revisor.id_revisor = revisao.id_revisor
@@ -128,7 +128,7 @@ module.exports = (pool) => {
   router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      await pool.query('DELETE FROM revisao WHERE id_revisa = $1', [id]);
+      await pool.query('DELETE FROM revisao WHERE id_revisao = $1', [id]);
       res.status(204).send();
     } catch (error) {
       console.error(error);
@@ -142,7 +142,7 @@ module.exports = (pool) => {
     const { avaliacao, comentario } = req.body;
     try {
       const result = await pool.query(
-        'UPDATE revisao SET avaliacao = $1, comentario = $2 WHERE id_revisa = $3',
+        'UPDATE revisao SET avaliacao = $1, comentario = $2 WHERE id_revisao = $3',
         [avaliacao, comentario, id]
       );
       res.status(200).json(result.rows);
@@ -158,7 +158,7 @@ module.exports = (pool) => {
     const { aceito } = req.body;
 
     try {
-      const result = await pool.query('UPDATE revisao SET aceito = $1 WHERE id_revisa = $2 RETURNING id_artigo, id_revisor', [aceito, id]);
+      const result = await pool.query('UPDATE revisao SET aceito = $1 WHERE id_revisao = $2 RETURNING id_artigo, id_revisor', [aceito, id]);
       const { id_artigo, id_revisor } = result.rows[0];
     
       // Insere os valores na tabela revisor_artigo
