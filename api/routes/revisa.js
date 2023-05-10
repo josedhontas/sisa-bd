@@ -77,7 +77,7 @@ module.exports = (pool) => {
     try {
       const { email, boleano } = req.params;
 
-      const condition = boleano === 'true' ? '= true' : '= false';
+      const condition = boleano === 'true' ? 'true' : 'false';
 
 
       const result = await pool.query(
@@ -87,12 +87,12 @@ module.exports = (pool) => {
             FROM revisor
             INNER JOIN revisao ON revisor.id_revisor = revisao.id_revisor
             INNER JOIN artigo ON revisao.id_artigo = artigo.id_artigo
-            INNER JOIN submete ON artigo.id_artigo = submete.id_artigo
-            INNER JOIN autor ON submete.id_autor = autor.id_autor
+            INNER JOIN submissao ON artigo.id_artigo = submissao.id_artigo
+            INNER JOIN autor ON submissao.id_autor = autor.id_autor
             INNER JOIN revista ON artigo.id_revista = revista.id_revista
             INNER JOIN trabalha_editor ON trabalha_editor.id_revista = revista.id_revista
             INNER JOIN editor ON trabalha_editor.id_editor = editor.id_editor
-            WHERE revisor.email = $1 AND revisao.aceito ${condition}`,
+            WHERE revisor.email = $1 AND revisao.aceito is ${condition}`,
         [email]
       );
 
