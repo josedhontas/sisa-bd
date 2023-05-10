@@ -17,7 +17,7 @@ const parecerRoutes = require('./routes/parecer')(pool);
 const trabalhaAdministradorRoutes = require('./routes/trabalhaAdministrador')(pool);
 const trabalhaEditorRoutes = require('./routes/trabalhaEditor')(pool);
 const submeteRoutes = require('./routes/submete')(pool);
-const revisaoRoutes = require('./routes/revisao')(pool);
+const revisaRoutes = require('./routes/revisa')(pool);
 const swagger = require('./swagger');
 
 
@@ -38,7 +38,7 @@ app.use('/revista', revistaRoutes);
 app.use('/trabalhaAdministrador', trabalhaAdministradorRoutes);
 app.use('/trabalhaEditor', trabalhaEditorRoutes);
 app.use('/submete', submeteRoutes);
-app.use('/revisao', revisaoRoutes);
+app.use('/revisa', revisaRoutes);
 
 
 swagger(app);

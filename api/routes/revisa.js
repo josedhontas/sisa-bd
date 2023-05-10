@@ -72,7 +72,7 @@ module.exports = (pool) => {
     });
   });
 
-  // rota que retorna todos os convites de revisaoo para um revisor, ela é utsada para saber os convites pendentes e os outros
+  // rota que retorna todos os convites de revisao para um revisor, ela é utsada para saber os convites pendentes e os outros
   router.get('/:email/:boleano', async (req, res) => {
     try {
       const { email, boleano } = req.params;
@@ -81,7 +81,7 @@ module.exports = (pool) => {
 
 
       const result = await pool.query(
-        `SELECT artigo.nome_artigo, revisao.id_revisao, revista.nome_revista, artigo.link_artigo,
+        `SELECT artigo.nome_artigo, revisao.id_revisa, revista.nome_revista, artigo.link_artigo,
             (SELECT nome_completo FROM usuario WHERE email = autor.email) AS nome_autor,
             (SELECT nome_completo FROM usuario WHERE email = editor.email) AS nome_editor
             FROM revisor
@@ -108,7 +108,7 @@ module.exports = (pool) => {
     try {
       const idArtigo = parseInt(req.params.id_artigo);
         const consulta = `
-        SELECT usuario.nome_completo, usuario.email, revisao.id_revisao
+        SELECT usuario.nome_completo, usuario.email, revisao.id_revisa
         FROM usuario
         INNER JOIN revisor ON usuario.email = revisor.email
         INNER JOIN revisao ON revisor.id_revisor = revisao.id_revisor
@@ -128,7 +128,7 @@ module.exports = (pool) => {
   router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      await pool.query('DELETE FROM revisao WHERE id_revisao = $1', [id]);
+      await pool.query('DELETE FROM revisao WHERE id_revisa = $1', [id]);
       res.status(204).send();
     } catch (error) {
       console.error(error);
@@ -142,7 +142,7 @@ module.exports = (pool) => {
     const { avaliacao, comentario } = req.body;
     try {
       const result = await pool.query(
-        'UPDATE revisao SET avaliacao = $1, comentario = $2 WHERE id_revisao = $3',
+        'UPDATE revisao SET avaliacao = $1, comentario = $2 WHERE id_revisa = $3',
         [avaliacao, comentario, id]
       );
       res.status(200).json(result.rows);
@@ -158,7 +158,7 @@ module.exports = (pool) => {
     const { aceito } = req.body;
 
     try {
-      const result = await pool.query('UPDATE revisao SET aceito = $1 WHERE id_revisao = $2 RETURNING id_artigo, id_revisor', [aceito, id]);
+      const result = await pool.query('UPDATE revisao SET aceito = $1 WHERE id_revisa = $2 RETURNING id_artigo, id_revisor', [aceito, id]);
       const { id_artigo, id_revisor } = result.rows[0];
     
       // Insere os valores na tabela revisor_artigo
@@ -172,7 +172,7 @@ module.exports = (pool) => {
     
   });
 
-  // rota para enviar convite de revisaoo para alguem
+  // rota para enviar convite de revisao para alguem
 
   router.put('/revisor/:email/', async (req, res) => {
     const { email} = req.params;
@@ -199,20 +199,20 @@ module.exports = (pool) => {
         }
 
         // Verificar se já existe uma revisão para o artigo
-        const revisaoExists = await pool.query(
+        const revisaExists = await pool.query(
             'SELECT * FROM revisao WHERE id_artigo = $1',
             [id_artigo]
         );
 
-        if (revisaoExists.rows.length > 1) { // Se já existe dois revisores, atualizar o ultimo revisor existente
-            const updaterevisao = await pool.query(
+        if (revisaExists.rows.length > 1) { // Se já existe dois revisores, atualizar o ultimo revisor existente
+            const updaterevisa = await pool.query(
                 'UPDATE revisao SET id_revisor = $1, aceito = false WHERE id_artigo = $2',
                 [id_revisor, id_artigo]
             );
 
             res.send(`revisao atualizada com sucesso para o artigo de id ${id_artigo}`);
         } else { // Se não existe uma revisão, criar uma nova revisão
-            const newrevisao = await pool.query(
+            const newrevisa = await pool.query(
                 'INSERT INTO revisao (id_artigo, id_revisor, aceito) VALUES ($1, $2, false)',
                 [id_artigo, id_revisor]
             );
