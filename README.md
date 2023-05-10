@@ -16,7 +16,7 @@ A API pode ser encontrada em: [sisa-api](https://api.sisa.systems/usuarios)
 
 ### Vídeo demonstrativo
 
-O video encontra-se em: [colocar link](https://youtu.be/7T-413zNM7Q)
+O video encontra-se em: [demonstração](https://www.youtube.com/watch?v=nBrd0WvjNFg)
 
 ### Como executar o projeto
 
