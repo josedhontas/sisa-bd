@@ -218,9 +218,32 @@ module.exports = (pool) => {
 
 
 // rota para alertar que o convite foi aceito pelo revisor
+
+/**
+ * @swagger
+ * /revisao/aceito/{id}:
+ *   put:
+ *     summary: Atualiza o status de aceitação de uma revisão para "Aceito"
+ *     tags:
+ *       - Revisão
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID da revisão
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Status de aceitação da revisão atualizado para "Aceito" com sucesso
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
+
   router.put('/aceito/:id', async (req, res) => {
     const { id } = req.params;
-    const { aceito } = req.body;
+    const aceito = true;
 
     try {
       const result = await pool.query('UPDATE revisao SET aceito = $1 WHERE id_revisao = $2 RETURNING id_artigo, id_revisor', [aceito, id]);

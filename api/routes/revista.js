@@ -43,6 +43,27 @@ module.exports = (pool) => {
   
 
   // Retorna todas as revistas cadastradas
+
+  /**
+ * @swagger
+ * /revista:
+ *   get:
+ *     summary: Retorna todas as revistas cadastradas
+ *     tags:
+ *       - Revista
+ *     responses:
+ *       200:
+ *         description: Lista de revistas cadastradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Revista'
+ *       500:
+ *         description: Erro ao buscar revistas
+ */
+
   router.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM revista');
@@ -54,6 +75,34 @@ module.exports = (pool) => {
   });
 
    // Retorna todas as revistas com o nome
+
+   /**
+ * @swagger
+ * /revista/{nome}:
+ *   get:
+ *     summary: Retorna todas as revistas com base no nome
+ *     tags:
+ *       - Revista
+ *     parameters:
+ *       - name: nome
+ *         in: path
+ *         required: true
+ *         description: Nome da revista
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lista de revistas encontradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Revista'
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
   router.get('/:nome', (req, res) => {
     const nome = req.params.nome;
     const query = `SELECT * FROM revista WHERE nome_revista LIKE '%${nome}%'`;
@@ -68,6 +117,46 @@ module.exports = (pool) => {
   });
 
   //verifica se adminstrador é válido
+
+  /**
+ * @swagger
+ * /administrador/valida/{email}:
+ *   get:
+ *     summary: Verifica se um administrador é válido
+ *     tags:
+ *       - Administrador
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         required: true
+ *         description: E-mail do administrador
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: O administrador é válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 resp:
+ *                   type: string
+ *                   description: Status da resposta (200)
+ *       404:
+ *         description: O administrador não é válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 resp:
+ *                   type: string
+ *                   description: Status da resposta (404)
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
   router.get('/valida/:email', async (req, res, next)=>{
     const {email} = req.params;
     console.log(email)
