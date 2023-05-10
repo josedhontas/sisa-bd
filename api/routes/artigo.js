@@ -183,7 +183,7 @@ module.exports = (pool) => {
       console.log("ID_ARTIGO: " + id_artigo)
       //select de, respectivamente todas as submissões, avaliações e pareceres emitidos
       const submissao = await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1', [id_artigo]);
-      const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisao where id_artigo = $1 and (aceito = true and avaliacao is not null)', [id_artigo])
+      const revisao = await pool.query('SELECT data_revisao, avaliacao, comentario from revisao where id_artigo = $1 and (aceito = true and avaliacao is not null)', [id_artigo])
       const parecer = await pool.query('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1', [id_artigo])
 
       //pega todas as linhas resultantes da consulta
@@ -205,8 +205,8 @@ module.exports = (pool) => {
         acont.acontecimento = "Article has been revised"
         acont.parecer = acont.avaliacao;
         delete acont.avaliacao;
-        acont.data = acont.data_revisa;
-        delete acont.data_revisa;
+        acont.data = acont.data_revisao;
+        delete acont.data_revisao;
       }
 
       for (let acont of pareceres) {
