@@ -5,6 +5,25 @@ module.exports = (pool) => {
 
 
   // Rota para buscar todos os revisores
+
+  /**
+ * @swagger
+ * /revisor:
+ *   get:
+ *     summary: Busca todos os revisores
+ *     tags:
+ *       - Revisor
+ *     responses:
+ *       200:
+ *         description: Lista de revisores encontrada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Revisor'
+ */
+
   router.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM revisor inner join usuario using(emaiL)');
@@ -15,6 +34,32 @@ module.exports = (pool) => {
     }
   });
   //rota que retorna o revisor a partir do email
+
+  /**
+ * @swagger
+ * /revisor/{email}:
+ *   get:
+ *     summary: Retorna um revisor pelo email
+ *     tags:
+ *       - Revisor
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email do revisor a ser retornado
+ *     responses:
+ *       200:
+ *         description: Revisor encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Revisor'
+ *       404:
+ *         description: Revisor não encontrado
+ */
+
   router.get('/:email', async (req, res) => {
     try {
       const { email } = req.params;
@@ -27,6 +72,31 @@ module.exports = (pool) => {
   });
 
   // Rota para criar um novo revisor
+
+  /**
+ * @swagger
+ * /revisor:
+ *   post:
+ *     summary: Cria um novo revisor
+ *     tags:
+ *       - Revisor
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/NovoRevisor'
+ *     responses:
+ *       201:
+ *         description: Revisor criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Revisor'
+ *       500:
+ *         description: Erro ao criar novo revisor
+ */
+
   router.post('/', async (req, res) => {
     try {
       const { email } = req.body;
@@ -39,6 +109,38 @@ module.exports = (pool) => {
   });
 
   // Rota para atualizar um revisor existente
+
+  /**
+ * @swagger
+ * /revisor/{email}:
+ *   put:
+ *     summary: Atualiza um revisor existente
+ *     tags:
+ *       - Revisor
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         description: Email do revisor a ser atualizado
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AtualizaRevisor'
+ *     responses:
+ *       200:
+ *         description: Revisor atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Revisor'
+ *       500:
+ *         description: Erro ao atualizar revisor
+ */
+
   router.put('/:email', async (req, res) => {
     try {
       const { email } = req.params;
@@ -52,6 +154,28 @@ module.exports = (pool) => {
   });
 
   // Rota para deletar um revisor existente
+
+  /**
+ * @swagger
+ * /revisor/{email}:
+ *   delete:
+ *     summary: Deleta um revisor existente
+ *     tags:
+ *       - Revisor
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         description: Email do revisor a ser deletado
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Revisor deletado com sucesso
+ *       500:
+ *         description: Erro ao deletar revisor
+ */
+
   router.delete('/:email', async (req, res) => {
     try {
       const { email } = req.params;
@@ -65,6 +189,34 @@ module.exports = (pool) => {
 
   //essa rota recebe como parâmetro o email um editor e retorna todos os possíveis revisores
   //para um artigo
+
+  /**
+ * @swagger
+ * /revisor/revisoresPossiveis/{email}:
+ *   get:
+ *     summary: Retorna todos os possíveis revisores para um artigo
+ *     tags:
+ *       - Revisor
+ *     parameters:
+ *       - name: email
+ *         in: path
+ *         description: Email do editor
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lista de revisores possíveis
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Revisor'
+ *       500:
+ *         description: Erro ao buscar revisores
+ */
+
   router.get('/revisoresPossiveis/:email', async (req, res)=>{
     const {email} = req.params;
     try {
