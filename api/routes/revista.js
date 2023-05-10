@@ -177,6 +177,61 @@ module.exports = (pool) => {
   });
 
   // insere nova revista 
+
+  /**
+ * @swagger
+ * /revista:
+ *   post:
+ *     summary: Insere uma nova revista
+ *     tags:
+ *       - Revista
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome_revista:
+ *                 type: string
+ *                 description: Nome da revista
+ *               descricao:
+ *                 type: string
+ *                 description: Descrição da revista
+ *               email:
+ *                 type: string
+ *                 description: Email do editor responsável pela revista
+ *             example:
+ *               nome_revista: Revista X
+ *               descricao: Descrição da Revista X
+ *               email: editor@example.com
+ *     responses:
+ *       201:
+ *         description: Revista inserida com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 resp:
+ *                   type: integer
+ *                   description: Código de resposta
+ *               example:
+ *                 resp: 201
+ *       500:
+ *         description: Erro ao inserir revista
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 resp:
+ *                   type: integer
+ *                   description: Código de resposta
+ *               example:
+ *                 resp: 500
+ */
+
   
   router.post('/', existsUser, async (req, res, next) => {
     const { nome_revista, descricao, email } = req.body;
@@ -209,6 +264,92 @@ module.exports = (pool) => {
   });
   
   // rota que atualiza os dados da revista a partir do id
+
+  /**
+ * @swagger
+ * /revista/{id}:
+ *   put:
+ *     summary: Atualiza os dados de uma revista pelo ID
+ *     tags:
+ *       - Revista
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID da revista
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome_revista:
+ *                 type: string
+ *                 description: Novo nome da revista
+ *               descricao:
+ *                 type: string
+ *                 description: Nova descrição da revista
+ *             example:
+ *               nome_revista: Novo Nome da Revista
+ *               descricao: Nova descrição da Revista
+ *     responses:
+ *       200:
+ *         description: Dados da revista atualizados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Revista'
+ *       404:
+ *         description: Revista não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensagem de erro
+ *               example:
+ *                 error: Revista não encontrada
+ *       500:
+ *         description: Erro ao atualizar revista
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Mensagem de erro
+ *               example:
+ *                 error: Erro ao atualizar revista
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Revista:
+ *       type: object
+ *       properties:
+ *         id_revista:
+ *           type: integer
+ *           description: ID da revista
+ *         nome_revista:
+ *           type: string
+ *           description: Nome da revista
+ *         descricao:
+ *           type: string
+ *           description: Descrição da revista
+ *       example:
+ *         id_revista: 1
+ *         nome_revista: Nova Revista
+ *         descricao: Nova descrição da Revista
+ */
+
   router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { nome_revista, descricao } = req.body;
@@ -231,6 +372,38 @@ module.exports = (pool) => {
   });
 
   //rota que deleta uma revista
+
+  /**
+ * @swagger
+ * /revista/{id}:
+ *   delete:
+ *     summary: Deleta uma revista pelo ID
+ *     tags:
+ *       - Revista
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID da revista
+ *     responses:
+ *       204:
+ *         description: Revista excluída com sucesso
+ *       500:
+ *         description: Erro ao deletar revista
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ *               example:
+ *                 message: Erro ao deletar revista
+ */
+
   router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
