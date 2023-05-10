@@ -3,6 +3,61 @@ const router = express.Router();
 
 module.exports = (pool) => {
 
+  /**
+ * @swagger
+ * /revisao:
+ *   post:
+ *     summary: Envia convite para um revisor
+ *     tags:
+ *       - Revisão
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email_revisor:
+ *                 type: string
+ *                 description: Email do revisor em potencial
+ *                 example: anabeatriz@gmail.com
+ *               id_artigo:
+ *                 type: int
+ *                 description: id do artigo que se deseja convidar o revisor para avliar
+ *                 example: 7
+ *               msg_revisor:
+ *                  type: string
+ *                  description: Um convite formal e cordial para o revisor, recomendações etc
+ *                  example: Olá! Estou de convidando para avaliar esse artigo. Desde já agradeço por sua atenção.
+ *                  
+ *     responses:
+ *       201:
+ *         description: Convite enviado com sucesso!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Autor'
+ *       400:
+ *         description: Não é possível enviar o convite.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ *       500:
+ *         description: Erro ao enviar convite
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ */
   router.post('/', (req, res) => {
     const { id_artigo, msg_revisor, email_revisor } = req.body;
 
