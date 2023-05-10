@@ -8,11 +8,11 @@ Este é um projeto para a disciplina de Banco de Dados, desenvolvido por:
 
 ### Documentação da API
 
-A documentação da API pode ser encontrada em: [colocar link](https:google.com.br/)
+A documentação swagger da API pode ser encontrada em: [sisa-doc](https://api.sisa.systems/api-docs/)
 
 ### Acessar API
 
-A API pode ser encontrada em: [sisa-api](https://sisa-api-nalwq.ondigitalocean.app/usuarios/)
+A API pode ser encontrada em: [sisa-api](https://api.sisa.systems/usuarios)
 
 ### Vídeo demonstrativo
 

@@ -4,6 +4,32 @@ const router = express.Router();
 module.exports = (pool) => {
 
   // Rota para buscar todos os autores
+
+  /**
+ * @swagger
+ * /autor:
+ *   get:
+ *     summary: Retorna a lista de autores
+ *     tags:
+ *       - Autor
+ *     responses:
+ *       200:
+ *         description: Lista de autores retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Autor'
+ *       500:
+ *         description: Erro ao buscar autores
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ */
+
+
   router.get('/', async (req, res) => {
     try {
       const result = await pool.query('SELECT * FROM autor');
@@ -15,6 +41,40 @@ module.exports = (pool) => {
   });
 
   // Rota para buscar um autor por email
+
+  /**
+ * @swagger
+ * /autor/{email}:
+ *   get:
+ *     summary: Retorna um autor pelo e-mail
+ *     tags:
+ *       - Autor
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do autor
+ *     responses:
+ *       200:
+ *         description: Autor retornado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Autor'
+ *       500:
+ *         description: Erro ao buscar autor por email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ */
+
   router.get('/:email', async (req, res) => {
     try {
       const { email } = req.params;
@@ -27,6 +87,55 @@ module.exports = (pool) => {
   });
 
   // Rota para criar um novo autor
+
+  /**
+ * @swagger
+ * /autor:
+ *   post:
+ *     summary: Cria um novo autor
+ *     tags:
+ *       - Autor
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Email do autor
+ *             example:
+ *               email: autor@example.com
+ *     responses:
+ *       201:
+ *         description: Autor criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Autor'
+ *       400:
+ *         description: Não é possível adicionar o e-mail como autor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ *       500:
+ *         description: Erro ao criar novo autor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ */
+
   router.post('/', async (req, res) => {
     try {
       const { email } = req.body;
@@ -45,6 +154,52 @@ module.exports = (pool) => {
 
 
   // Rota para atualizar um autor existente
+
+  /**
+ * @swagger
+ * /autor/{email}:
+ *   put:
+ *     summary: Atualiza um autor existente
+ *     tags:
+ *       - Autor
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do autor
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cargo:
+ *                 type: string
+ *                 description: Cargo do autor
+ *             example:
+ *               cargo: Revisor
+ *     responses:
+ *       200:
+ *         description: Autor atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Autor'
+ *       500:
+ *         description: Erro ao atualizar autor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ */
+
   router.put('/:email', async (req, res) => {
     try {
       const { email } = req.params;
@@ -58,6 +213,36 @@ module.exports = (pool) => {
   });
 
   // Rota para deletar um autor existente
+
+  /**
+ * @swagger
+ * /autor/{email}:
+ *   delete:
+ *     summary: Exclui um autor
+ *     tags:
+ *       - Autor
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do autor
+ *     responses:
+ *       204:
+ *         description: Autor excluído com sucesso
+ *       500:
+ *         description: Erro ao excluir autor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de erro
+ */
+
   router.delete('/:email', async (req, res) => {
     try {
       const { email } = req.params;

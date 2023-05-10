@@ -24,6 +24,76 @@ module.exports = (pool) => {
   });
 
   //Rota para autentificar um usuario
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Usuario:
+ *       type: object
+ *       required:
+ *         - cpf
+ *         - nome
+ *         - data_nascimento
+ *       properties:
+ *         cpf:
+ *           type: integer
+ *           description: CPF do usuário
+ *         nome:
+ *           type: string
+ *           description: Nome do usuário
+ *         data_nascimento:
+ *           type: string
+ *           format: date
+ *           description: Data de nascimento do usuário
+ *       example:
+ *         cpf: 12345678901
+ *         nome: João da Silva
+ *         data_nascimento: 2000-01-01
+ */
+
+/**
+ * @swagger
+ * /usuarios/{email}/{senha}:
+ *   get:
+ *     summary: Autentica um usuário
+ *     tags:
+ *       - Usuários
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do usuário
+ *       - in: path
+ *         name: senha
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Senha do usuário
+ *     responses:
+ *       200:
+ *         description: Usuário autenticado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Erro ao buscar usuário
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ */
+
+
   router.get('/:email/:senha', authenticate, async (req, res) => {
     const { email, senha } = req.params;
     try {
@@ -40,6 +110,42 @@ module.exports = (pool) => {
   });
 
   // Rota para buscar um usuário por email
+
+  /**
+ * @swagger
+ * /usuarios/{email}:
+ *   get:
+ *     summary: Busca um usuário por e-mail
+ *     tags:
+ *       - Usuários
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do usuário
+ *     responses:
+ *       200:
+ *         description: Usuário encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Erro ao buscar usuário
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ */
+
   router.get('/:email', authenticate, async (req, res) => {
     const { email } = req.params;
     try {
@@ -56,6 +162,62 @@ module.exports = (pool) => {
   });
 
   // Rota para criar um usuário
+
+
+  /**
+ * @swagger
+ * /usuarios:
+ *   post:
+ *     summary: Cria um novo usuário
+ *     tags:
+ *       - Usuários
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Email do usuário
+ *               nome_completo:
+ *                 type: string
+ *                 description: Nome completo do usuário
+ *               senha:
+ *                 type: string
+ *                 description: Senha do usuário
+ *               telefone:
+ *                 type: string
+ *                 description: Telefone do usuário
+ *               departamento:
+ *                 type: string
+ *                 description: Departamento do usuário
+ *               universidade:
+ *                 type: string
+ *                 description: Universidade do usuário
+ *             example:
+ *               email: andre@gmail.com
+ *               nome_completo: André Britto de Carvalho
+ *               senha: senha123456
+ *               telefone: (11) 98765-4321
+ *               departamento: DCOMP
+ *               universidade: UFS
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Erro ao criar usuário
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ */
+
   router.post('/', authenticate, (req, res) => {
     const { email, nome_completo, senha, telefone, departamento, universidade } = req.body;
   
@@ -85,6 +247,79 @@ module.exports = (pool) => {
   });
   
 //rota que atualiza as informações de um usuário a partir do seu email
+
+
+/**
+ * @swagger
+ * /usuarios/{email}:
+ *   put:
+ *     summary: Atualiza as informações de um usuário pelo e-mail
+ *     tags:
+ *       - Usuários
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome_completo:
+ *                 type: string
+ *                 description: Nome completo do usuário
+ *               senha:
+ *                 type: string
+ *                 description: Senha do usuário
+ *               telefone:
+ *                 type: string
+ *                 description: Telefone do usuário
+ *               departamento:
+ *                 type: string
+ *                 description: Departamento do usuário
+ *               universidade:
+ *                 type: string
+ *                 description: Universidade do usuário
+ *               descricao:
+ *                 type: string
+ *                 description: Descrição do usuário
+ *               link_imagem:
+ *                 type: string
+ *                 description: Link da imagem do usuário
+ *             example:
+ *               nome_completo: André Britto de Carvalho
+ *               senha: novaSenha12345
+ *               telefone: (11) 98765-4321
+ *               departamento: DCOMP
+ *               universidade: UFS
+ *               descricao: Descrição do usuário
+ *               link_imagem: https://example.com/imagem.jpg
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Erro ao atualizar usuário
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ */
+
   router.put('/:email', authenticate, (req, res) => {
     const { nome_completo, senha, telefone, departamento, universidade, descricao, link_imagem } = req.body;
     const { email } = req.params;
@@ -111,6 +346,42 @@ module.exports = (pool) => {
   });
   
 // rota que deleta um usuário recebendo o seu email
+
+/**
+ * @swagger
+ * /usuarios/{email}:
+ *   delete:
+ *     summary: Exclui um usuário pelo e-mail
+ *     tags:
+ *       - Usuários
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email do usuário
+ *     responses:
+ *       200:
+ *         description: Usuário excluído com sucesso
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Erro ao excluir usuário
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ */
+
   router.delete('/:email', authenticate, (req, res) => {
     const { email } = req.params;
     pool.query('DELETE FROM usuario WHERE email = $1', [email], (error, result) => {
