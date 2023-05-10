@@ -3,6 +3,8 @@ const router = express.Router();
 
 module.exports = (pool) => {
 
+  
+
   router.post('/', (req, res) => {
     const { id_artigo, msg_revisor, email_revisor } = req.body;
 
