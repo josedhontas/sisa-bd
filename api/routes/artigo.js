@@ -182,7 +182,7 @@ module.exports = (pool) => {
       const { id_artigo } = req.params;
       console.log("ID_ARTIGO: " + id_artigo)
       //select de, respectivamente todas as submissões, avaliações e pareceres emitidos
-      const submissao = await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1', [id_artigo]);
+      const submissao = await pool.query('SELECT data_submissao FROM artigo join submissao using(id_artigo) WHERE id_artigo = $1', [id_artigo]);
       const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisao where id_artigo = $1 and (aceito = true and avaliacao is not null)', [id_artigo])
       const parecer = await pool.query('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1', [id_artigo])
 
@@ -274,9 +274,9 @@ module.exports = (pool) => {
     const { id } = req.params;
     try {
       const query = `
-        SELECT artigo.*, submete.id_autor, parecer.*, revisao.*
+        SELECT artigo.*, submissao.id_autor, parecer.*, revisao.*
         FROM artigo
-        JOIN submete ON artigo.id_artigo = submete.id_artigo
+        JOIN submissao ON artigo.id_artigo = submissao.id_artigo
         LEFT JOIN parecer ON artigo.id_artigo = parecer.id_artigo
         LEFT JOIN revisao ON artigo.id_artigo = revisao.id_artigo
         WHERE artigo.id_artigo = $1;
@@ -475,7 +475,7 @@ module.exports = (pool) => {
       const query = `
       SELECT a.link_artigo, s.data_submissao
       FROM artigo AS a
-      JOIN submete AS s ON s.id_artigo = a.id_artigo
+      JOIN submissao AS s ON s.id_artigo = a.id_artigo
       JOIN autor AS au ON au.id_autor = s.id_autor
       JOIN usuario AS u ON u.email = au.email
       JOIN trabalha_editor AS te ON te.id_revista = a.id_revista

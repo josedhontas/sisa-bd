@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (pool) => {
-//rota que insere o id_autor e id_artigo na tabela submete
+//rota que insere o id_autor e id_artigo na tabela submissao
     router.post('/', async (req, res) => {
         try {
           const { email, id_artigo } = req.body;
@@ -11,8 +11,8 @@ module.exports = (pool) => {
           const queryAutor = await pool.query('SELECT id_autor FROM autor WHERE email = $1', [email]);
           const id_autor = queryAutor.rows[0].id_autor;
       
-          // Insere uma nova linha na tabela "submete"
-          const result = await pool.query('INSERT INTO submete (id_autor, id_artigo) VALUES ($1, $2) RETURNING *', [id_autor, id_artigo]);
+          // Insere uma nova linha na tabela "submissao"
+          const result = await pool.query('INSERT INTO submissao (id_autor, id_artigo) VALUES ($1, $2) RETURNING *', [id_autor, id_artigo]);
       
           res.status(201).json(result.rows[0]);
         } catch (error) {
@@ -33,7 +33,7 @@ module.exports = (pool) => {
           // Busca as submissões do autor
           const querySubmissoes = await pool.query(`
             SELECT r.nome_revista, a.nome_artigo, a.id_artigo
-            FROM submete s
+            FROM submissao s
             JOIN artigo a ON s.id_artigo = a.id_artigo
             JOIN revista r ON a.id_revista = r.id_revista
             WHERE s.id_autor = $1
