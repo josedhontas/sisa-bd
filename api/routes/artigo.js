@@ -296,11 +296,11 @@ module.exports = (pool) => {
 
   // Rota que insere o artigo no bd
 
-  /**
+ /**
  * @swagger
  * /artigo:
  *   post:
- *     summary: Insere um novo artigo no banco de dados
+ *     summary: Cadastra um novo artigo
  *     tags:
  *       - Artigo
  *     requestBody:
@@ -313,22 +313,19 @@ module.exports = (pool) => {
  *               pdf:
  *                 type: string
  *                 format: binary
- *                 description: Arquivo PDF do artigo
  *               id_revista:
  *                 type: integer
- *                 description: ID da revista associada ao artigo
  *               palavras_chaves:
  *                 type: string
- *                 description: Palavras-chave do artigo (separadas por vírgula)
  *               nome_artigo:
  *                 type: string
- *                 description: Nome do artigo
  *               resumo:
  *                 type: string
- *                 description: Resumo do artigo
+ *               id_autor:
+ *                 type: integer
  *     responses:
  *       201:
- *         description: Artigo inserido com sucesso
+ *         description: Artigo cadastrado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -336,15 +333,19 @@ module.exports = (pool) => {
  *               properties:
  *                 id_artigo:
  *                   type: integer
- *                   description: ID do artigo inserido
+ *                   example: 1
  *       500:
  *         description: Erro interno do servidor
  *         content:
- *           text/plain:
+ *           application/json:
  *             schema:
- *               type: string
- *               example: Erro interno do servidor.
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Erro interno do servidor
  */
+
 
   router.post('/', upload.single('pdf'), (req, res) => {
     const pdf = req.file;
