@@ -81,7 +81,7 @@ module.exports = (pool) => {
 
 
       const result = await pool.query(
-        `SELECT artigo.nome_artigo, revisao.id_revisao, revista.nome_revista, artigo.link_artigo,
+        `SELECT artigo.nome_artigo, revisao.id_revisao, revista.nome_revista, submissao.link_artigo,
             (SELECT nome_completo FROM usuario WHERE email = autor.email) AS nome_autor,
             (SELECT nome_completo FROM usuario WHERE email = editor.email) AS nome_editor
             FROM revisor

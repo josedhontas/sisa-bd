@@ -349,17 +349,35 @@ module.exports = (pool) => {
   router.post('/', upload.single('pdf'), (req, res) => {
     const pdf = req.file;
     const link = pdf.location; // pega o link do pdf no s3
-    const { id_revista, palavras_chaves, nome_artigo, resumo } = req.body;
-    const query =
+    const { id_revista, palavras_chaves, nome_artigo, resumo, id_autor } = req.body;
+    const queryArtigo =
       'INSERT INTO artigo (id_revista, palavras_chaves, nome_artigo, link_artigo, resumo) VALUES ($1, $2, $3, $4, $5) RETURNING id_artigo';
-    const values = [id_revista, palavras_chaves, nome_artigo, link, resumo];
-    pool.query(query, values, (error, results) => {
+    const valuesArtigo = [id_revista, palavras_chaves, nome_artigo, link, resumo];
+    
+    pool.query(queryArtigo, valuesArtigo, (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send('Erro interno do servidor');
       } else {
         const id_artigo = results.rows[0].id_artigo;
-        res.status(201).json({ id_artigo: id_artigo });
+        
+        // Verifica se o id_autor está presente na solicitação POST
+        if (id_autor) {
+          const querySubmissao =
+            'INSERT INTO submissao (id_autor, id_artigo, link_artigo) VALUES ($1, $2, $3)';
+          const valuesSubmissao = [id_autor, id_artigo, link];
+          
+          pool.query(querySubmissao, valuesSubmissao, (error, results) => {
+            if (error) {
+              console.error(error);
+              res.status(500).send('Erro interno do servidor');
+            } else {
+              res.status(201).json({ id_artigo: id_artigo });
+            }
+          });
+        } else {
+          res.status(201).json({ id_artigo: id_artigo });
+        }
       }
     });
   });
