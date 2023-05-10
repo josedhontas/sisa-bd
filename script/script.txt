@@ -66,8 +66,8 @@ CREATE TABLE artigo (
   resumo TEXT
 );
 
-CREATE TABLE revisa (
-  id_revisa SERIAL PRIMARY KEY,
+CREATE TABLE revisao (
+  id_revisao SERIAL PRIMARY KEY,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
   id_revisor INT REFERENCES revisor(id_revisor) ON DELETE CASCADE,
   msg_revisor TEXT,
