@@ -38,7 +38,7 @@ app.use('/revista', revistaRoutes);
 app.use('/trabalhaAdministrador', trabalhaAdministradorRoutes);
 app.use('/trabalhaEditor', trabalhaEditorRoutes);
 app.use('/submete', submeteRoutes);
-app.use('/revisa', revisaRoutes);
+app.use('/revisao', revisaRoutes);
 
 
 swagger(app);
