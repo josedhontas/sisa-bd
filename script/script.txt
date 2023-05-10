@@ -73,7 +73,6 @@ CREATE TABLE revisao (
   avaliacao VARCHAR,
   comentario TEXT,
   aceito BOOLEAN,
-  data_revisa DATE
 );
 
 
@@ -81,7 +80,6 @@ CREATE TABLE parecer (
   id_parecer SERIAL PRIMARY KEY,
   id_editor INT REFERENCES editor(id_editor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
-  data_parecer DATE,
   comentario TEXT,
   parecer VARCHAR
 );
@@ -91,7 +89,6 @@ CREATE TABLE submissao (
   id_autor INT REFERENCES autor(id_autor) ON DELETE CASCADE,
   id_artigo INT REFERENCES artigo(id_artigo) ON DELETE CASCADE,
   link_artigo varchar,
-  data_submete DATE
 );
 
 CREATE TABLE revisor_artigo(
