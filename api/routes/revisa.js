@@ -92,7 +92,7 @@ module.exports = (pool) => {
             INNER JOIN revista ON artigo.id_revista = revista.id_revista
             INNER JOIN trabalha_editor ON trabalha_editor.id_revista = revista.id_revista
             INNER JOIN editor ON trabalha_editor.id_editor = editor.id_editor
-            WHERE revisor.email = $1 AND revisao.aceito is ${condition}`,
+            WHERE revisor.email = $1 AND revisao.aceito ${condition}`,
         [email]
       );
 
