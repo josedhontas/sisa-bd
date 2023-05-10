@@ -137,20 +137,30 @@ module.exports = (pool) => {
   });
  // rota para inserir uma avaliacao para o artigo
 
-  router.put('/:id', async (req, res) => {
-    const id = req.params.id; // aqui estamos acessando o valor do parâmetro 'id'
-    const { avaliacao, comentario } = req.body;
-    try {
-      const result = await pool.query(
-        'UPDATE revisao SET avaliacao = $1, comentario = $2 WHERE id_revisao = $3',
-        [avaliacao, comentario, id]
-      );
-      res.status(200).json(result.rows);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Erro ao atualizar informações de revisão');
-    }
-  });
+ router.put('/:id', async (req, res) => {
+  const id = req.params.id;
+  const { avaliacao, comentario } = req.body;
+
+  try {
+    const result = await pool.query(
+      'UPDATE revisao SET avaliacao = $1, comentario = $2 WHERE id_revisao = $3',
+      [avaliacao, comentario, id]
+    );
+
+    // Gerar um novo acontecimento
+    const acontecimentoResult = await pool.query(
+      'INSERT INTO acontecimento (id_artigo, acontecimento) VALUES ($1, $2) RETURNING id_acontecimento',
+      [id, `Article has been revised`]
+    );
+    const id_acontecimento = acontecimentoResult.rows[0].id_acontecimento;
+
+    res.status(200).json({ id_acontecimento: id_acontecimento, result: result.rows });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao atualizar informações de revisão');
+  }
+});
+
 
 // rota para alertar que o convite foi aceito pelo revisor
   router.put('/aceito/:id', async (req, res) => {
