@@ -183,12 +183,12 @@ module.exports = (pool) => {
       console.log("ID_ARTIGO: " + id_artigo)
       //select de, respectivamente todas as submissões, avaliações e pareceres emitidos
       const submissao = await pool.query('SELECT data_submissao FROM artigo join submete using(id_artigo) WHERE id_artigo = $1', [id_artigo]);
-      const revisao = await pool.query('SELECT data_revisa, avaliacao, comentario from revisa where id_artigo = $1 and (aceito = true and avaliacao is not null)', [id_artigo])
+      const revisaoo = await pool.query('SELECT data_revisao, avaliacao, comentario from revisao where id_artigo = $1 and (aceito = true and avaliacao is not null)', [id_artigo])
       const parecer = await pool.query('SELECT data_parecer, parecer, comentario FROM parecer where id_artigo = $1', [id_artigo])
 
       //pega todas as linhas resultantes da consulta
       let submissoes = submissao.rows;
-      let revisoes = revisao.rows;
+      let revisoes = revisaoo.rows;
       let pareceres = parecer.rows
 
       //padroniza todos os arrays de objetos, de modo que contenham as as mesas chaves
@@ -205,8 +205,8 @@ module.exports = (pool) => {
         acont.acontecimento = "Article has been revised"
         acont.parecer = acont.avaliacao;
         delete acont.avaliacao;
-        acont.data = acont.data_revisa;
-        delete acont.data_revisa;
+        acont.data = acont.data_revisao;
+        delete acont.data_revisao;
       }
 
       for (let acont of pareceres) {
@@ -274,11 +274,11 @@ module.exports = (pool) => {
     const { id } = req.params;
     try {
       const query = `
-        SELECT artigo.*, submete.id_autor, parecer.*, revisa.*
+        SELECT artigo.*, submete.id_autor, parecer.*, revisao.*
         FROM artigo
         JOIN submete ON artigo.id_artigo = submete.id_artigo
         LEFT JOIN parecer ON artigo.id_artigo = parecer.id_artigo
-        LEFT JOIN revisa ON artigo.id_artigo = revisa.id_artigo
+        LEFT JOIN revisao ON artigo.id_artigo = revisao.id_artigo
         WHERE artigo.id_artigo = $1;
       `;
       const { rows } = await pool.query(query, [id]);

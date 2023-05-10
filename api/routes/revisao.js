@@ -16,10 +16,10 @@ module.exports = (pool) => {
         return;
       }
 
-      // Se encontrou um revisor com esse email, use o ID dele para inserir na tabela revisa
+      // Se encontrou um revisor com esse email, use o ID dele para inserir na tabela revisao
       if (results1.rowCount > 0) {
         const id_revisor = results1.rows[0].id_revisor;
-        const query2 = 'INSERT INTO revisa (id_artigo, id_revisor, msg_revisor) VALUES ($1, $2, $3)';
+        const query2 = 'INSERT INTO revisao (id_artigo, id_revisor, msg_revisor) VALUES ($1, $2, $3)';
         const values2 = [id_artigo, id_revisor, msg_revisor];
         pool.query(query2, values2, (error2, results2) => {
           if (error2) {
@@ -40,7 +40,7 @@ module.exports = (pool) => {
             res.status(500).send('Erro interno do servidor');
             return;
           }
-          // Se encontrou um usuário com esse email, insere um novo revisor e usa o ID gerado para inserir na tabela revisa
+          // Se encontrou um usuário com esse email, insere um novo revisor e usa o ID gerado para inserir na tabela revisao
           if (results3.rowCount > 0) {
             const query4 = 'INSERT INTO revisor (email) VALUES ($1) RETURNING id_revisor';
             const values4 = [email_revisor];
@@ -51,7 +51,7 @@ module.exports = (pool) => {
                 return;
               }
               const id_revisor = results4.rows[0].id_revisor;
-              const query5 = 'INSERT INTO revisa (id_artigo, id_revisor, msg_revisor) VALUES ($1, $2, $3)';
+              const query5 = 'INSERT INTO revisao (id_artigo, id_revisor, msg_revisor) VALUES ($1, $2, $3)';
               const values5 = [id_artigo, id_revisor, msg_revisor];
               pool.query(query5, values5, (error5, results5) => {
                 if (error5) {
@@ -72,7 +72,7 @@ module.exports = (pool) => {
     });
   });
 
-  // rota que retorna todos os convites de revisao para um revisor, ela é utsada para saber os convites pendentes e os outros
+  // rota que retorna todos os convites de revisaoo para um revisor, ela é utsada para saber os convites pendentes e os outros
   router.get('/:email/:boleano', async (req, res) => {
     try {
       const { email, boleano } = req.params;
@@ -81,18 +81,18 @@ module.exports = (pool) => {
 
 
       const result = await pool.query(
-        `SELECT artigo.nome_artigo, revisa.id_revisa, revista.nome_revista, artigo.link_artigo,
+        `SELECT artigo.nome_artigo, revisao.id_revisao, revista.nome_revista, artigo.link_artigo,
             (SELECT nome_completo FROM usuario WHERE email = autor.email) AS nome_autor,
             (SELECT nome_completo FROM usuario WHERE email = editor.email) AS nome_editor
             FROM revisor
-            INNER JOIN revisa ON revisor.id_revisor = revisa.id_revisor
-            INNER JOIN artigo ON revisa.id_artigo = artigo.id_artigo
+            INNER JOIN revisao ON revisor.id_revisor = revisao.id_revisor
+            INNER JOIN artigo ON revisao.id_artigo = artigo.id_artigo
             INNER JOIN submete ON artigo.id_artigo = submete.id_artigo
             INNER JOIN autor ON submete.id_autor = autor.id_autor
             INNER JOIN revista ON artigo.id_revista = revista.id_revista
             INNER JOIN trabalha_editor ON trabalha_editor.id_revista = revista.id_revista
             INNER JOIN editor ON trabalha_editor.id_editor = editor.id_editor
-            WHERE revisor.email = $1 AND revisa.aceito ${condition}`,
+            WHERE revisor.email = $1 AND revisao.aceito ${condition}`,
         [email]
       );
 
@@ -108,11 +108,11 @@ module.exports = (pool) => {
     try {
       const idArtigo = parseInt(req.params.id_artigo);
         const consulta = `
-        SELECT usuario.nome_completo, usuario.email, revisa.id_revisa
+        SELECT usuario.nome_completo, usuario.email, revisao.id_revisao
         FROM usuario
         INNER JOIN revisor ON usuario.email = revisor.email
-        INNER JOIN revisa ON revisor.id_revisor = revisa.id_revisor
-        WHERE revisa.id_artigo = $1
+        INNER JOIN revisao ON revisor.id_revisor = revisao.id_revisor
+        WHERE revisao.id_artigo = $1
       `;
   
       const resultado = await pool.query(consulta, [idArtigo]);
@@ -128,7 +128,7 @@ module.exports = (pool) => {
   router.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      await pool.query('DELETE FROM revisa WHERE id_revisa = $1', [id]);
+      await pool.query('DELETE FROM revisao WHERE id_revisao = $1', [id]);
       res.status(204).send();
     } catch (error) {
       console.error(error);
@@ -142,7 +142,7 @@ module.exports = (pool) => {
     const { avaliacao, comentario } = req.body;
     try {
       const result = await pool.query(
-        'UPDATE revisa SET avaliacao = $1, comentario = $2 WHERE id_revisa = $3',
+        'UPDATE revisao SET avaliacao = $1, comentario = $2 WHERE id_revisao = $3',
         [avaliacao, comentario, id]
       );
       res.status(200).json(result.rows);
@@ -158,7 +158,7 @@ module.exports = (pool) => {
     const { aceito } = req.body;
 
     try {
-      const result = await pool.query('UPDATE revisa SET aceito = $1 WHERE id_revisa = $2 RETURNING id_artigo, id_revisor', [aceito, id]);
+      const result = await pool.query('UPDATE revisao SET aceito = $1 WHERE id_revisao = $2 RETURNING id_artigo, id_revisor', [aceito, id]);
       const { id_artigo, id_revisor } = result.rows[0];
     
       // Insere os valores na tabela revisor_artigo
@@ -172,7 +172,7 @@ module.exports = (pool) => {
     
   });
 
-  // rota para enviar convite de revisao para alguem
+  // rota para enviar convite de revisaoo para alguem
 
   router.put('/revisor/:email/', async (req, res) => {
     const { email} = req.params;
@@ -199,25 +199,25 @@ module.exports = (pool) => {
         }
 
         // Verificar se já existe uma revisão para o artigo
-        const revisaExists = await pool.query(
-            'SELECT * FROM revisa WHERE id_artigo = $1',
+        const revisaoExists = await pool.query(
+            'SELECT * FROM revisao WHERE id_artigo = $1',
             [id_artigo]
         );
 
-        if (revisaExists.rows.length > 1) { // Se já existe dois revisores, atualizar o ultimo revisor existente
-            const updateRevisa = await pool.query(
-                'UPDATE revisa SET id_revisor = $1, aceito = false WHERE id_artigo = $2',
+        if (revisaoExists.rows.length > 1) { // Se já existe dois revisores, atualizar o ultimo revisor existente
+            const updaterevisao = await pool.query(
+                'UPDATE revisao SET id_revisor = $1, aceito = false WHERE id_artigo = $2',
                 [id_revisor, id_artigo]
             );
 
-            res.send(`Revisa atualizada com sucesso para o artigo de id ${id_artigo}`);
+            res.send(`revisao atualizada com sucesso para o artigo de id ${id_artigo}`);
         } else { // Se não existe uma revisão, criar uma nova revisão
-            const newRevisa = await pool.query(
-                'INSERT INTO revisa (id_artigo, id_revisor, aceito) VALUES ($1, $2, false)',
+            const newrevisao = await pool.query(
+                'INSERT INTO revisao (id_artigo, id_revisor, aceito) VALUES ($1, $2, false)',
                 [id_artigo, id_revisor]
             );
 
-            res.send(`Nova revisa criada com sucesso para o artigo de id ${id_artigo}`);
+            res.send(`Nova revisao criada com sucesso para o artigo de id ${id_artigo}`);
         }
     } catch (error) {
         console.error(error);
